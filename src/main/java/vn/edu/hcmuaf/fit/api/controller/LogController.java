@@ -1,0 +1,56 @@
+package vn.edu.hcmuaf.fit.api.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import vn.edu.hcmuaf.fit.api.dto.LogDTO;
+import vn.edu.hcmuaf.fit.api.model.Log;
+import vn.edu.hcmuaf.fit.api.service.LogService;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("api/logs")
+public class LogController {
+    @Autowired
+    private LogService logService;
+
+    public LogController(LogService logService) {
+        this.logService = logService;
+    }
+
+    // Create a new Log
+    @PostMapping()
+    public ResponseEntity<Log> createLog(@RequestParam int userId,
+                                         @RequestBody LogDTO log) {
+        return new ResponseEntity<>(logService.saveLog(userId, log), HttpStatus.CREATED);
+    }
+
+    // Get all Log
+    @GetMapping
+    public List<Log> getAllLogs() {
+        return logService.getLogs();
+    }
+
+    // Get Log by id
+    @GetMapping("{id}")
+    public ResponseEntity<Log> getLogById(@PathVariable ("id") int id) {
+        return new ResponseEntity<>(logService.getLogByID(id), HttpStatus.OK);
+    }
+
+    // Update Log by id
+    @PutMapping("{id}")
+    public ResponseEntity<Log> updateLogById(@PathVariable ("id") int id,
+                                                       @RequestBody LogDTO logDTO) {
+        return new ResponseEntity<>(logService.updateLogByID(id, logDTO), HttpStatus.OK);
+    }
+
+    // Delete Log by id
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> deleteLogById(@PathVariable ("id") int id) {
+        logService.deleteLogByID(id);
+        return new ResponseEntity<>("Log " + id + " is deleted successfully!", HttpStatus.OK);
+    }
+
+}
