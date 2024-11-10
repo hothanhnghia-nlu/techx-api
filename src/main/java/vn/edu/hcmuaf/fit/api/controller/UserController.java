@@ -1,5 +1,8 @@
 package vn.edu.hcmuaf.fit.api.controller;
 
+import com.mysql.cj.x.protobuf.MysqlxDatatypes;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/users")
+@Tag(name="User Controller")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -28,6 +32,7 @@ public class UserController {
 
     // Get all User
     @GetMapping
+    @Operation(summary = "Get all User", description = ".")
     public List<UserDTO> getAllUsers() {
         return userService.getUsers();
     }

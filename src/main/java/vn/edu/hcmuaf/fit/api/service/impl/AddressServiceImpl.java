@@ -24,7 +24,6 @@ public class AddressServiceImpl implements AddressService {
     public Address saveAddress(AddressDTO addressDTO) {
         Address address = new Address();
         address.setId(addressDTO.getId());
-//        address.setName(addressDTO.getName());
         address.setStatus((byte) 1);
         address.setCreatedAt(LocalDateTime.now());
 
