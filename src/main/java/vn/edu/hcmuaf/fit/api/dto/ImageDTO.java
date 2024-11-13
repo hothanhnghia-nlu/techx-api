@@ -15,4 +15,13 @@ public class ImageDTO {
     private String url;
     private ProviderDTO provider;
     private List<ProductDTO> products;
+
+    public ImageDTO() {
+    }
+
+    public ImageDTO(Integer id, String name, String url) {
+        this.id = id;
+        this.name = name;
+        this.url = url;
+    }
 }

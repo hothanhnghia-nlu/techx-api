@@ -28,7 +28,7 @@ public class ProviderController {
 
     // Get all Provider
     @GetMapping
-    public List<Provider> getAllProviders() {
+    public List<ProviderDTO> getAllProviders() {
         return providerService.getProviders();
     }
 
