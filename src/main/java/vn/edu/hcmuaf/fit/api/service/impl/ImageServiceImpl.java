@@ -1,7 +1,11 @@
 package vn.edu.hcmuaf.fit.api.service.impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hcmuaf.fit.api.dto.ImageDTO;
 import vn.edu.hcmuaf.fit.api.dto.ProductDTO;
 import vn.edu.hcmuaf.fit.api.dto.ProviderDTO;
@@ -10,48 +14,59 @@ import vn.edu.hcmuaf.fit.api.model.Image;
 import vn.edu.hcmuaf.fit.api.model.Product;
 import vn.edu.hcmuaf.fit.api.model.Provider;
 import vn.edu.hcmuaf.fit.api.repository.ImageRepository;
-import vn.edu.hcmuaf.fit.api.repository.ProductRepository;
-import vn.edu.hcmuaf.fit.api.repository.ProviderRepository;
 import vn.edu.hcmuaf.fit.api.service.ImageService;
 
-import java.time.LocalDateTime;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class ImageServiceImpl implements ImageService {
     @Autowired
     private ImageRepository imageRepository;
-    @Autowired
-    private ProviderRepository providerRepository;
-    @Autowired
-    private ProductRepository productRepository;
+
     @Autowired
     private ProviderServiceImpl providerService;
-    @Autowired
-    private ProductServiceImpl productService;
 
-    public ImageServiceImpl(ImageRepository imageRepository, ProviderRepository providerRepository, ProductRepository productRepository) {
+    @Autowired
+    private Cloudinary cloudinary;
+
+    public ImageServiceImpl(ImageRepository imageRepository, @Lazy ProviderServiceImpl providerService) {
         this.imageRepository = imageRepository;
-        this.providerRepository = providerRepository;
-        this.productRepository = productRepository;
+        this.providerService = providerService;
     }
 
-    @Override
-    public Image saveImage(int providerId, int productId, ImageDTO imageDTO) {
-        Provider provider = providerRepository.findById(providerId).orElseThrow(() ->
-                new ResourceNotFoundException("Provider", "Id", imageDTO.getId()));
+    // Save Provider Image
+    public Image saveProviderImage(MultipartFile file, Provider provider) throws IOException {
+        String providerName = provider.getName();
+        String fileExtension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
 
-        Product product = productRepository.findById(productId).orElseThrow(() ->
-                new ResourceNotFoundException("Provider", "Id", imageDTO.getId()));
+        String folderPath = "src/main/resources/static/images/providers/";
+
+        File folder = new File(folderPath);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        Path path = Paths.get(folderPath + providerName);
+        Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                ObjectUtils.asMap("public_id", "providers/" + providerName));
+
+        String url = (String) uploadResult.get("url");
 
         Image image = new Image();
-        image.setId(imageDTO.getId());
-        image.setName(imageDTO.getName());
-        image.setUrl(imageDTO.getUrl());
+        image.setName(providerName);
+        image.setUrl(url);
         image.setProvider(provider);
-        image.setProduct(product);
 
         return imageRepository.save(image);
     }
@@ -101,28 +116,4 @@ public class ImageServiceImpl implements ImageService {
                 new ResourceNotFoundException("Image", "Id", id));
     }
 
-    @Override
-    public Image updateImageByID(Integer id, ImageDTO imageDTO) {
-        Image existingImage = imageRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Image", "Id", id));
-
-        Image image = getImageByID(id);
-        Provider provider = providerService.getProviderByID(image.getProvider().getId());
-        Product product = productService.getProductByID(image.getProvider().getId());
-
-        existingImage.setName(imageDTO.getName() != null ? imageDTO.getName() : existingImage.getName());
-        existingImage.setUrl(imageDTO.getUrl() != null ? imageDTO.getUrl() : existingImage.getUrl());
-        existingImage.setProvider(imageDTO.getProvider() != null ? provider : existingImage.getProvider());
-        existingImage.setProduct(imageDTO.getProducts() != null ? product : existingImage.getProduct());
-
-        return imageRepository.save(existingImage);
-    }
-
-    @Override
-    public void deleteImageByID(Integer id) {
-        imageRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Image", "Id", id));
-
-        imageRepository.deleteById(id);
-    }
 }

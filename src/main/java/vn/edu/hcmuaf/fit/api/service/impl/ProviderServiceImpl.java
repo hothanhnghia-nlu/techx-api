@@ -1,17 +1,24 @@
 package vn.edu.hcmuaf.fit.api.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hcmuaf.fit.api.dto.ImageDTO;
 import vn.edu.hcmuaf.fit.api.dto.ProductDTO;
 import vn.edu.hcmuaf.fit.api.dto.ProviderDTO;
 import vn.edu.hcmuaf.fit.api.exception.ResourceNotFoundException;
+import vn.edu.hcmuaf.fit.api.model.Image;
 import vn.edu.hcmuaf.fit.api.model.Product;
 import vn.edu.hcmuaf.fit.api.model.Provider;
 import vn.edu.hcmuaf.fit.api.model.Provider;
+import vn.edu.hcmuaf.fit.api.repository.ImageRepository;
 import vn.edu.hcmuaf.fit.api.repository.ProviderRepository;
+import vn.edu.hcmuaf.fit.api.service.ImageService;
 import vn.edu.hcmuaf.fit.api.service.ProviderService;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,17 +28,27 @@ public class ProviderServiceImpl implements ProviderService {
     @Autowired
     private ProviderRepository providerRepository;
 
+    @Autowired
+    @Lazy
+    private ImageServiceImpl imageService;
+
     public ProviderServiceImpl(ProviderRepository providerRepository) {
         this.providerRepository = providerRepository;
     }
 
     @Override
-    public Provider saveProvider(ProviderDTO providerDTO) {
+    @Transactional
+    public Provider saveProvider(ProviderDTO providerDTO, MultipartFile imageFile) throws IOException {
         Provider provider = new Provider();
         provider.setId(providerDTO.getId());
         provider.setName(providerDTO.getName());
         provider.setStatus((byte) 1);
         provider.setCreatedAt(LocalDateTime.now());
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            Image image = imageService.saveProviderImage(imageFile, provider);
+            provider.setImage(image);
+        }
 
         return providerRepository.save(provider);
     }

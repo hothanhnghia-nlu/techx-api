@@ -1,9 +1,11 @@
 package vn.edu.hcmuaf.fit.api.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hcmuaf.fit.api.dto.ProviderDTO;
 import vn.edu.hcmuaf.fit.api.model.Provider;
 import vn.edu.hcmuaf.fit.api.service.ProviderService;
@@ -22,8 +24,17 @@ public class ProviderController {
 
     // Create a new Provider
     @PostMapping()
-    public ResponseEntity<Provider> createProvider(@RequestBody ProviderDTO provider) {
-        return new ResponseEntity<>(providerService.saveProvider(provider), HttpStatus.CREATED);
+    public ResponseEntity<Provider> createProvider(@RequestParam("provider") String providerJson,
+                                                   @RequestParam("image") MultipartFile imageFile) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            ProviderDTO providerDTO = objectMapper.readValue(providerJson, ProviderDTO.class);
+
+            Provider savedProvider = providerService.saveProvider(providerDTO, imageFile);
+            return ResponseEntity.ok(savedProvider);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
     }
 
     // Get all Provider
