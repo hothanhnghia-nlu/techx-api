@@ -11,7 +11,7 @@ import vn.edu.hcmuaf.fit.api.service.FavoriteService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/favorites")
+@RequestMapping("api/v1/favorites")
 public class FavoriteController {
     @Autowired
     private FavoriteService favoriteService;

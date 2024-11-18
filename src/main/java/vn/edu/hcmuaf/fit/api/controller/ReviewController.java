@@ -11,7 +11,7 @@ import vn.edu.hcmuaf.fit.api.service.ReviewService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/comments")
+@RequestMapping("api/v1/comments")
 public class ReviewController {
     @Autowired
     private ReviewService reviewService;

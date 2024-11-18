@@ -11,7 +11,7 @@ import vn.edu.hcmuaf.fit.api.service.ProviderService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/providers")
+@RequestMapping("api/v1/providers")
 public class ProviderController {
     @Autowired
     private ProviderService providerService;

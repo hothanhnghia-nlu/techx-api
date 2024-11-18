@@ -11,7 +11,7 @@ import vn.edu.hcmuaf.fit.api.service.AddressService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/addresses")
+@RequestMapping("api/v1/addresses")
 public class AddressController {
     @Autowired
     private AddressService addressService;

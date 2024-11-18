@@ -14,7 +14,7 @@ import vn.edu.hcmuaf.fit.api.service.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/users")
+@RequestMapping("api/v1/users")
 @Tag(name="User Controller")
 public class UserController {
     @Autowired

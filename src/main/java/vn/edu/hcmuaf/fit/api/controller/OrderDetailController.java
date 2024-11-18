@@ -11,7 +11,7 @@ import vn.edu.hcmuaf.fit.api.service.OrderDetailService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/order-details")
+@RequestMapping("api/v1/order-details")
 public class OrderDetailController {
     @Autowired
     private OrderDetailService orderDetailService;
