@@ -1,26 +1,24 @@
 spring:
   application:
     name: techx-api
+  datasource:
+    url: jdbc:mysql://localhost:3306/techx_nlu
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
 server:
   port: 8080
-
   security:
     user:
       name: admin
       password: admin
-
-  datasource:
-    url: jdbc:mysql://localhost:3306/techx_nlu
-    username: root
-    password: ''
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-    hibernate:
-      ddl-auto: update
 
 logging:
   level:
@@ -29,10 +27,10 @@ logging:
         sql: debug
         type: trace
 
-# SWAGGER - http://localhost:9090/swagger-ui/index.html
+# SWAGGER - http://localhost:8080/swagger-ui/index.html
 open-api:
   service:
-    api-docs: API documentss
+    api-docs: API documents
     title: techx
     version: v1.0.0
     server: http://localhost:8080

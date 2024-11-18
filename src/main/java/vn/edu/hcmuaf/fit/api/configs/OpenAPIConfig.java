@@ -19,7 +19,7 @@ public class OpenAPIConfig {
     public GroupedOpenApi publicApi(@Value("${openapi.service.api-docs}") String apiDocs) {
         return GroupedOpenApi.builder().
                 group(apiDocs)
-                .packagesToScan("vn.edu.hcmuaf.fit.api.configs")
+                .packagesToScan("vn.edu.hcmuaf.fit.api.controller")
                 .build();
     }
 
