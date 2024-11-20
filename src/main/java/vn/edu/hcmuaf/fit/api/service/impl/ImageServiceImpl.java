@@ -38,33 +38,24 @@ public class ImageServiceImpl implements ImageService {
     @Autowired
     private Cloudinary cloudinary;
 
-    public ImageServiceImpl(ImageRepository imageRepository, @Lazy ProviderServiceImpl providerService) {
+    public ImageServiceImpl(ImageRepository imageRepository) {
         this.imageRepository = imageRepository;
-        this.providerService = providerService;
     }
 
     // Save Provider Image
     public Image saveProviderImage(MultipartFile file, Provider provider) throws IOException {
-        String providerName = provider.getName();
+        String providerName = provider.getName().replaceAll(" ", "_");
         String fileExtension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
 
-        String folderPath = "src/main/resources/static/images/providers/";
-
-        File folder = new File(folderPath);
-        if (!folder.exists()) {
-            folder.mkdirs();
-        }
-
-        Path path = Paths.get(folderPath + providerName);
-        Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+        String fileName = providerName + fileExtension;
 
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
-                ObjectUtils.asMap("public_id", "providers/" + providerName));
+                ObjectUtils.asMap("public_id", "providers/" + fileName));
 
         String url = (String) uploadResult.get("url");
 
         Image image = new Image();
-        image.setName(providerName);
+        image.setName(fileName);
         image.setUrl(url);
         image.setProvider(provider);
 
@@ -80,18 +71,21 @@ public class ImageServiceImpl implements ImageService {
     
     private ImageDTO convertToDTO(Image image) {
         ProviderDTO providerDTO = null;
-        if (image.getProvider() != null) {
+        ProductDTO productDTO = null;
+        Provider provider = image.getProvider();
+        Product product = image.getProduct();
+
+        if (provider != null) {
             providerDTO = new ProviderDTO(
-                    image.getProvider().getId(),
-                    image.getProvider().getName()
+                    provider.getId(),
+                    provider.getName()
             );
         }
 
-        ProductDTO productDTO = null;
-        if (image.getProduct() != null) {
+        if (product != null) {
             productDTO = new ProductDTO(
-                    image.getProduct().getId(),
-                    image.getProduct().getName()
+                    product.getId(),
+                    product.getName()
             );
         }
 

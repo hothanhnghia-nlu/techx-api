@@ -22,13 +22,15 @@ public class FavoriteController {
 
     // Create a new Favorite
     @PostMapping()
-    public ResponseEntity<Favorite> createFavorite(@RequestBody FavoriteDTO favorite) {
-        return new ResponseEntity<>(favoriteService.saveFavorite(favorite), HttpStatus.CREATED);
+    public ResponseEntity<Favorite> createFavorite(@RequestParam int userId,
+                                                   @RequestParam int productId,
+                                                   @RequestBody FavoriteDTO favorite) {
+        return new ResponseEntity<>(favoriteService.saveFavorite(userId, productId, favorite), HttpStatus.CREATED);
     }
 
     // Get all Favorite
     @GetMapping
-    public List<Favorite> getAllFavorites() {
+    public List<FavoriteDTO> getAllFavorites() {
         return favoriteService.getFavorites();
     }
 
@@ -36,13 +38,6 @@ public class FavoriteController {
     @GetMapping("{id}")
     public ResponseEntity<Favorite> getFavoriteById(@PathVariable ("id") int id) {
         return new ResponseEntity<>(favoriteService.getFavoriteByID(id), HttpStatus.OK);
-    }
-
-    // Update Favorite by id
-    @PutMapping("{id}")
-    public ResponseEntity<Favorite> updateFavoriteById(@PathVariable ("id") int id,
-                                                       @RequestBody FavoriteDTO favoriteDTO) {
-        return new ResponseEntity<>(favoriteService.updateFavoriteByID(id, favoriteDTO), HttpStatus.OK);
     }
 
     // Delete Favorite by id

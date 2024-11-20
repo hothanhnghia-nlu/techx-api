@@ -69,12 +69,13 @@ public class ProductServiceImpl implements ProductService {
     private ProductDTO convertToDTO(Product product) {
         ProviderDTO providerDTO = null;
         ImageDTO imageDTO;
+        Provider provider = product.getProvider();
         List<ImageDTO> imageDTOList = new ArrayList<>();
 
-        if (product.getProvider() != null) {
+        if (provider != null) {
             providerDTO = new ProviderDTO(
-                    product.getProvider().getId(),
-                    product.getProvider().getName()
+                    provider.getId(),
+                    provider.getName()
             );
         }
 

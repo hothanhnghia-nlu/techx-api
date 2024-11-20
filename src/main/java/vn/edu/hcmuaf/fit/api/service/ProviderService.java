@@ -11,7 +11,7 @@ public interface ProviderService {
     Provider saveProvider(ProviderDTO ProviderDTO, MultipartFile imageFile) throws IOException;
     List<ProviderDTO> getProviders();
     Provider getProviderByID(Integer id);
-    Provider updateProviderByID(Integer id, ProviderDTO ProviderDTO);
+    Provider updateProviderByID(Integer id, ProviderDTO ProviderDTO, MultipartFile imageFile) throws IOException;
     void deleteProviderByID(Integer id);
 
 }
