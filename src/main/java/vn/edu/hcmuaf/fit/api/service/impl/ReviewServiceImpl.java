@@ -2,29 +2,49 @@ package vn.edu.hcmuaf.fit.api.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vn.edu.hcmuaf.fit.api.dto.ReviewDTO;
+import vn.edu.hcmuaf.fit.api.dto.*;
 import vn.edu.hcmuaf.fit.api.exception.ResourceNotFoundException;
+import vn.edu.hcmuaf.fit.api.model.Image;
+import vn.edu.hcmuaf.fit.api.model.Product;
 import vn.edu.hcmuaf.fit.api.model.Review;
+import vn.edu.hcmuaf.fit.api.model.User;
+import vn.edu.hcmuaf.fit.api.repository.ProductRepository;
 import vn.edu.hcmuaf.fit.api.repository.ReviewRepository;
+import vn.edu.hcmuaf.fit.api.repository.UserRepository;
 import vn.edu.hcmuaf.fit.api.service.ReviewService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReviewServiceImpl implements ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
-    public ReviewServiceImpl(ReviewRepository reviewRepository) {
+    public ReviewServiceImpl(ReviewRepository reviewRepository, UserRepository userRepository, ProductRepository productRepository) {
         this.reviewRepository = reviewRepository;
+        this.userRepository = userRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
-    public Review saveComment(ReviewDTO reviewDTO) {
+    public Review saveReview(int userId, int productId, ReviewDTO reviewDTO) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", reviewDTO.getId()));
+
+        Product product = productRepository.findById(productId).orElseThrow(() ->
+                new ResourceNotFoundException("Product", "Id", reviewDTO.getId()));
+
         Review review = new Review();
         review.setId(reviewDTO.getId());
-//        Comment.setName(CommentDTO.getName());
+        review.setUser(user);
+        review.setProduct(product);
         review.setStatus((byte) 1);
         review.setCreatedAt(LocalDateTime.now());
 
@@ -32,32 +52,80 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> getComments() {
-        return reviewRepository.findAll();
+    public List<ReviewDTO> getReviews() {
+        List<Review> reviews = reviewRepository.findAll();
+
+        return reviews.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    private ReviewDTO convertToDTO(Review review) {
+        UserDTO userDTO = null;
+        ProductDTO productDTO = null;
+        ImageDTO imageDTO;
+        User user = review.getUser();
+        Product product = review.getProduct();
+        List<ImageDTO> imageDTOList = new ArrayList<>();
+
+        if (user != null) {
+            userDTO = new UserDTO(
+                    user.getId(),
+                    user.getFullName(),
+                    user.getEmail(),
+                    user.getPhoneNumber()
+            );
+        }
+
+        if (product != null) {
+            if (product.getImages() != null) {
+                for (Image image : product.getImages()) {
+                    imageDTO = new ImageDTO(
+                            image.getId(),
+                            image.getName(),
+                            image.getUrl()
+                    );
+                    imageDTOList.add(imageDTO);
+                }
+            }
+            productDTO = new ProductDTO(
+                    product.getId(),
+                    product.getName(),
+                    product.getOriginalPrice(),
+                    product.getNewPrice(),
+                    product.getColor(),
+                    product.getRam(),
+                    product.getStorage()
+            );
+        }
+
+        ReviewDTO reviewDTO = new ReviewDTO();
+        reviewDTO.setId(review.getId());
+        reviewDTO.setUser(userDTO);
+        reviewDTO.setProduct(productDTO);
+        reviewDTO.setRating(review.getRating());
+        reviewDTO.setComment(review.getComment());
+        reviewDTO.setStatus(review.getStatus());
+        reviewDTO.setCreatedAt(review.getCreatedAt());
+        reviewDTO.setUpdatedAt(review.getUpdatedAt());
+
+        return reviewDTO;
     }
 
     @Override
-    public Review getCommentByID(Integer id) {
+    public Review getReviewByID(Integer id) {
         return reviewRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Comment", "Id", id));
+                new ResourceNotFoundException("Review", "Id", id));
     }
 
     @Override
-    public Review updateCommentByID(Integer id, ReviewDTO reviewDTO) {
-        Review existingReview = reviewRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Comment", "Id", id));
-
-//        existingComment.setName(CommentDTO.getName() != null ? CommentDTO.getName() : existingComment.getName());
-        existingReview.setStatus(reviewDTO.getStatus() != 0 ? reviewDTO.getStatus() : existingReview.getStatus());
-        existingReview.setUpdatedAt(LocalDateTime.now());
-
-        return reviewRepository.save(existingReview);
-    }
-
-    @Override
-    public void deleteCommentByID(Integer id) {
+    public void deleteReviewByID(Integer id) {
         reviewRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Comment", "Id", id));
+                new ResourceNotFoundException("Review", "Id", id));
+
+        userRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", id));
+
+        productRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Product", "Id", id));
 
         reviewRepository.deleteById(id);
     }

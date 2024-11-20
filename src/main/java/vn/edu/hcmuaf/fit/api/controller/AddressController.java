@@ -22,13 +22,14 @@ public class AddressController {
 
     // Create a new Address
     @PostMapping()
-    public ResponseEntity<Address> createAddress(@RequestBody AddressDTO address) {
-        return new ResponseEntity<>(addressService.saveAddress(address), HttpStatus.CREATED);
+    public ResponseEntity<Address> createAddress(@RequestParam int userId,
+                                                 @RequestBody AddressDTO address) {
+        return new ResponseEntity<>(addressService.saveAddress(userId, address), HttpStatus.CREATED);
     }
 
     // Get all Address
     @GetMapping
-    public List<Address> getAllAddresses() {
+    public List<AddressDTO> getAllAddresses() {
         return addressService.getAddresses();
     }
 

@@ -11,7 +11,7 @@ import vn.edu.hcmuaf.fit.api.service.ReviewService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/comments")
+@RequestMapping("api/reviews")
 public class ReviewController {
     @Autowired
     private ReviewService reviewService;
@@ -20,36 +20,31 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
-    // Create a new Comment
+    // Create a new Review
     @PostMapping()
-    public ResponseEntity<Review> createComment(@RequestBody ReviewDTO comment) {
-        return new ResponseEntity<>(reviewService.saveComment(comment), HttpStatus.CREATED);
+    public ResponseEntity<Review> createReview(@RequestParam int userId,
+                                               @RequestParam int productId,
+                                               @RequestBody ReviewDTO review) {
+        return new ResponseEntity<>(reviewService.saveReview(userId, productId, review), HttpStatus.CREATED);
     }
 
-    // Get all Comment
+    // Get all Review
     @GetMapping
-    public List<Review> getAllComments() {
-        return reviewService.getComments();
+    public List<ReviewDTO> getAllReviews() {
+        return reviewService.getReviews();
     }
 
-    // Get Comment by id
+    // Get Review by id
     @GetMapping("{id}")
-    public ResponseEntity<Review> getCommentById(@PathVariable ("id") int id) {
-        return new ResponseEntity<>(reviewService.getCommentByID(id), HttpStatus.OK);
+    public ResponseEntity<Review> getReviewById(@PathVariable ("id") int id) {
+        return new ResponseEntity<>(reviewService.getReviewByID(id), HttpStatus.OK);
     }
 
-    // Update Comment by id
-    @PutMapping("{id}")
-    public ResponseEntity<Review> updateCommentById(@PathVariable ("id") int id,
-                                                    @RequestBody ReviewDTO reviewDTO) {
-        return new ResponseEntity<>(reviewService.updateCommentByID(id, reviewDTO), HttpStatus.OK);
-    }
-
-    // Delete Comment by id
+    // Delete Review by id
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteCommentById(@PathVariable ("id") int id) {
-        reviewService.deleteCommentByID(id);
-        return new ResponseEntity<>("Comment " + id + " is deleted successfully!", HttpStatus.OK);
+    public ResponseEntity<String> deleteReviewById(@PathVariable ("id") int id) {
+        reviewService.deleteReviewByID(id);
+        return new ResponseEntity<>("Review " + id + " is deleted successfully!", HttpStatus.OK);
     }
 
 }

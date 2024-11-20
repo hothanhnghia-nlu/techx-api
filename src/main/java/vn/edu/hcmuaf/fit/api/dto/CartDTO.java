@@ -14,5 +14,5 @@ public class CartDTO {
     private int quantity;
     private double price;
     private byte status;
-    private LocalDateTime createdAt;
+    private LocalDateTime orderDate;
 }
