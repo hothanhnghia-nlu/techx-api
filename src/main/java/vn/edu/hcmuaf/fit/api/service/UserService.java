@@ -9,6 +9,7 @@ public interface UserService {
     User saveUser(UserDTO userDTO);
     List<UserDTO> getUsers();
     User getUserByID(Integer id);
+    User getUserByEmail(String email);
     User updateUserByID(Integer id, UserDTO userDTO);
     void deleteUserByID(Integer id);
 

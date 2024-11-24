@@ -62,7 +62,7 @@ public class LogServiceImpl implements LogService {
                 new ResourceNotFoundException("Log", "Id", id));
 
         Log log = getLogByID(id);
-        User user = userService.getUserByID(log.getUser().getId());
+        User user = userService.getUserByID(Math.toIntExact(log.getUser().getId()));
 
         existingLog.setLevel(logDTO.getLevel() != null ? logDTO.getLevel() : existingLog.getLevel());
         existingLog.setUser(logDTO.getUser() != null ? user : existingLog.getUser());

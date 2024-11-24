@@ -34,3 +34,15 @@ open-api:
     title: techx
     version: v1.0.0
     server: http://localhost:8080
+
+app:
+  baseURL: http://localhost:8080
+  name: ChatChit
+  jwt:
+    secretKey: c3ckfrhaKW8Mplm9ylgQCsMLoFmsip/ouP1u51eWRLRtCgDA6OFoLH+azJtNEDUYODPqhm/Kms2jYJdaIczcrap9vBVrbd7qMk1AuoNJjZg=
+    expiration-time-ms: 86400000 # 30 minutes
+  tokenExpirationTimes:
+    refresh: 86400000 # Refresh token expiration time (24 hours)
+    registration: 900000 # Registration token expiration time (15 minutes)
+    forgotPassword: 1800000 # Forgot password token expiration time (30 minutes)
+    resetPassword: 1800000 # Reset password token expiration time (30 minutes)
