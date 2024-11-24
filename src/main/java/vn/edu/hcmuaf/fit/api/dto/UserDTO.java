@@ -17,4 +17,14 @@ public class UserDTO {
     private byte status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public UserDTO() {
+    }
+
+    public UserDTO(Integer id, String fullName, String phoneNumber, String email) {
+        this.id = id;
+        this.fullName = fullName;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+    }
 }

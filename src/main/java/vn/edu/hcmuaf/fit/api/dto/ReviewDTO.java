@@ -11,8 +11,9 @@ public class ReviewDTO {
     private Integer id;
     private UserDTO user;
     private ProductDTO product;
-    private String content;
     private double rating;
+    private String comment;
     private byte status;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

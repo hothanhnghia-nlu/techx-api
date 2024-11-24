@@ -10,11 +10,15 @@ import lombok.Setter;
 public class ProviderDTO {
     private Integer id;
     private String name;
+    private ImageDTO image;
     private byte status;
 
     public ProviderDTO(Integer id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public ProviderDTO() {
     }
 
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)

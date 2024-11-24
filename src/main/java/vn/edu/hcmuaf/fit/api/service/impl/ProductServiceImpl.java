@@ -2,9 +2,11 @@ package vn.edu.hcmuaf.fit.api.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import vn.edu.hcmuaf.fit.api.dto.ImageDTO;
 import vn.edu.hcmuaf.fit.api.dto.ProductDTO;
 import vn.edu.hcmuaf.fit.api.dto.ProviderDTO;
 import vn.edu.hcmuaf.fit.api.exception.ResourceNotFoundException;
+import vn.edu.hcmuaf.fit.api.model.Image;
 import vn.edu.hcmuaf.fit.api.model.Product;
 import vn.edu.hcmuaf.fit.api.model.Provider;
 import vn.edu.hcmuaf.fit.api.repository.ProductRepository;
@@ -12,6 +14,7 @@ import vn.edu.hcmuaf.fit.api.repository.ProviderRepository;
 import vn.edu.hcmuaf.fit.api.service.ProductService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,11 +68,26 @@ public class ProductServiceImpl implements ProductService {
 
     private ProductDTO convertToDTO(Product product) {
         ProviderDTO providerDTO = null;
-        if (product.getProvider() != null) {
+        ImageDTO imageDTO;
+        Provider provider = product.getProvider();
+        List<ImageDTO> imageDTOList = new ArrayList<>();
+
+        if (provider != null) {
             providerDTO = new ProviderDTO(
-                    product.getProvider().getId(),
-                    product.getProvider().getName()
+                    provider.getId(),
+                    provider.getName()
             );
+        }
+
+        if (product.getImages() != null) {
+            for (Image image : product.getImages()) {
+                imageDTO = new ImageDTO(
+                        image.getId(),
+                        image.getName(),
+                        image.getUrl()
+                );
+                imageDTOList.add(imageDTO);
+            }
         }
 
         ProductDTO productDTO = new ProductDTO();
@@ -91,6 +109,7 @@ public class ProductServiceImpl implements ProductService {
         productDTO.setStatus((product.getStatus()));
         productDTO.setCreatedAt(product.getCreatedAt());
         productDTO.setUpdatedAt(product.getUpdatedAt());
+        productDTO.setImages(imageDTOList);
 
         return productDTO;
     }

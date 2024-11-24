@@ -31,6 +31,6 @@ public class Cart {
     private byte status;
 
     @Column(name = "order_date")
-    private LocalDateTime createdAt;
+    private LocalDateTime orderDate;
 
 }

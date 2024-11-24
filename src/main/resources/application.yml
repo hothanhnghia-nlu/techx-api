@@ -46,3 +46,4 @@ app:
     registration: 900000 # Registration token expiration time (15 minutes)
     forgotPassword: 1800000 # Forgot password token expiration time (30 minutes)
     resetPassword: 1800000 # Reset password token expiration time (30 minutes)
+

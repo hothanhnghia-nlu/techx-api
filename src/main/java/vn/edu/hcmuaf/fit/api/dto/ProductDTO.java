@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,6 +29,7 @@ public class ProductDTO {
     private byte status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<ImageDTO> images;
 
     public ProductDTO() {
     }
@@ -35,6 +37,16 @@ public class ProductDTO {
     public ProductDTO(Integer id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public ProductDTO(Integer id, String name, double originalPrice, double newPrice, String color, String ram, String storage) {
+        this.id = id;
+        this.name = name;
+        this.originalPrice = originalPrice;
+        this.newPrice = newPrice;
+        this.color = color;
+        this.ram = ram;
+        this.storage = storage;
     }
 
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
