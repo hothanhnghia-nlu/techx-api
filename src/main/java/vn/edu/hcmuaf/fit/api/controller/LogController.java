@@ -11,7 +11,7 @@ import vn.edu.hcmuaf.fit.api.service.LogService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/logs")
+@RequestMapping("api/v1/logs")
 public class LogController {
     @Autowired
     private LogService logService;

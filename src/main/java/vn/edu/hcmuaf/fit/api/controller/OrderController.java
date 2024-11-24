@@ -11,7 +11,7 @@ import vn.edu.hcmuaf.fit.api.service.OrderService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/orders")
+@RequestMapping("api/v1/orders")
 public class OrderController {
     @Autowired
     private OrderService orderService;

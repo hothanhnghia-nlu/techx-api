@@ -11,7 +11,7 @@ import vn.edu.hcmuaf.fit.api.service.CartService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/carts")
+@RequestMapping("api/v1/carts")
 public class CartController {
     @Autowired
     private CartService cartService;

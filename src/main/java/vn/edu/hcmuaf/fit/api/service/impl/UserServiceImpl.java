@@ -1,6 +1,9 @@
 package vn.edu.hcmuaf.fit.api.service.impl;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.api.dto.UserDTO;
 import vn.edu.hcmuaf.fit.api.exception.ResourceNotFoundException;
@@ -12,14 +15,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
+    private final PasswordEncoder passwordEncoder;
     @Autowired
     private UserRepository userRepository;
-
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public User saveUser(UserDTO userDTO) {
@@ -28,7 +30,7 @@ public class UserServiceImpl implements UserService {
         user.setFullName(userDTO.getFullName());
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setRole(0);
         user.setStatus((byte) 1);
         user.setCreatedAt(LocalDateTime.now());
@@ -61,6 +63,11 @@ public class UserServiceImpl implements UserService {
     public User getUserByID(Integer id) {
         return userRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("User", "Id", id));
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow();
     }
 
     @Override

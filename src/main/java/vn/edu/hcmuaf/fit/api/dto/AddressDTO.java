@@ -1,12 +1,11 @@
 package vn.edu.hcmuaf.fit.api.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 public class AddressDTO {
     private Integer id;
     private UserDTO user;
