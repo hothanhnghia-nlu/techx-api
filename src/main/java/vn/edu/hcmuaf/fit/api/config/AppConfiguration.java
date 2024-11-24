@@ -1,4 +1,4 @@
-package vn.edu.hcmuaf.fit.api.configs;
+package vn.edu.hcmuaf.fit.api.config;
 
 
 import lombok.RequiredArgsConstructor;
@@ -8,10 +8,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import vn.edu.hcmuaf.fit.api.repository.UserRepository;
@@ -19,6 +22,7 @@ import vn.edu.hcmuaf.fit.api.repository.UserRepository;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableWebSecurity
 public class AppConfiguration {
 
     private final UserRepository userRepository;
@@ -61,6 +65,19 @@ public class AppConfiguration {
                         .maxAge(3600);
             }
         };
+    }
+
+    @Bean(name = "customSecurityFilterChain")
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf().disable()
+                .cors().and()
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/api/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .authenticationProvider(authenticationProvider());
+        return http.build();
     }
 
 }
