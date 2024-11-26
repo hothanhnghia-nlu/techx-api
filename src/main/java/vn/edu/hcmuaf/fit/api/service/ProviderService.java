@@ -8,10 +8,10 @@ import java.io.IOException;
 import java.util.List;
 
 public interface ProviderService {
-    Provider saveProvider(ProviderDTO ProviderDTO, MultipartFile imageFile) throws IOException;
+    Provider saveProvider(ProviderDTO providerDTO, MultipartFile imageFile) throws IOException;
     List<ProviderDTO> getProviders();
     Provider getProviderByID(Integer id);
-    Provider updateProviderByID(Integer id, ProviderDTO ProviderDTO, MultipartFile imageFile) throws IOException;
+    Provider updateProviderByID(Integer id, ProviderDTO providerDTO, MultipartFile imageFile) throws IOException;
     void deleteProviderByID(Integer id);
 
 }

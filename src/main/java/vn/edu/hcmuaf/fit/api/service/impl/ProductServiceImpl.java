@@ -1,7 +1,11 @@
 package vn.edu.hcmuaf.fit.api.service.impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hcmuaf.fit.api.dto.ImageDTO;
 import vn.edu.hcmuaf.fit.api.dto.ProductDTO;
 import vn.edu.hcmuaf.fit.api.dto.ProviderDTO;
@@ -9,13 +13,16 @@ import vn.edu.hcmuaf.fit.api.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.api.model.Image;
 import vn.edu.hcmuaf.fit.api.model.Product;
 import vn.edu.hcmuaf.fit.api.model.Provider;
+import vn.edu.hcmuaf.fit.api.repository.ImageRepository;
 import vn.edu.hcmuaf.fit.api.repository.ProductRepository;
 import vn.edu.hcmuaf.fit.api.repository.ProviderRepository;
 import vn.edu.hcmuaf.fit.api.service.ProductService;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,17 +34,44 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProviderServiceImpl providerService;
 
+    @Autowired
+    private ImageRepository imageRepository;
+
+    @Autowired
+    @Lazy
+    private ImageServiceImpl imageService;
+
+    @Autowired
+    private Cloudinary cloudinary;
+
     public ProductServiceImpl(ProductRepository productRepository, ProviderRepository providerRepository) {
         this.productRepository = productRepository;
         this.providerRepository = providerRepository;
     }
 
     @Override
-    public Product saveProduct(int providerId, ProductDTO productDTO) {
+    public Product saveProduct(int providerId, ProductDTO productDTO, MultipartFile imageFile) throws IOException {
         Provider provider = providerRepository.findById(providerId).orElseThrow(() ->
                 new ResourceNotFoundException("Provider", "Id", productDTO.getId()));
 
+        Product product = transferProductData(provider, productDTO);
+
+        Product savedProduct = productRepository.save(product);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            Image image = imageService.saveProductImage(imageFile, product);
+            image.setProduct(savedProduct);
+            List<Image> images = new ArrayList<>();
+            images.add(image);
+            product.setImages(images);
+        }
+
+        return productRepository.save(product);
+    }
+
+    public static Product transferProductData(Provider provider, ProductDTO productDTO) {
         Product product = new Product();
+
         product.setId(productDTO.getId());
         product.setName(productDTO.getName());
         product.setProvider(provider);
@@ -56,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
         product.setStatus((byte) 1);
         product.setCreatedAt(LocalDateTime.now());
 
-        return productRepository.save(product);
+        return product;
     }
 
     @Override
@@ -121,10 +155,45 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProductByID(Integer id, ProductDTO productDTO) {
+    public Product updateProductByID(Integer id, ProductDTO productDTO, MultipartFile imageFile) throws IOException {
         Product existingProduct = productRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Product", "Id", id));
 
+        Product product = updateProductData(id, existingProduct, productDTO);
+
+        Product savedProduct = productRepository.save(product);
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            List<Image> images = existingProduct.getImages();
+            if (images != null && !images.isEmpty()) {
+                Image existingImage = images.get(0);
+
+                String publicId = extractPublicId(existingImage.getUrl());
+                cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+
+                Map uploadResult = cloudinary.uploader().upload(imageFile.getBytes(),
+                        ObjectUtils.asMap("folder", "products"));
+
+                existingImage.setName(savedProduct.getName());
+                existingImage.setUrl((String) uploadResult.get("url"));
+                imageRepository.save(existingImage);
+            } else {
+                Image newImage = imageService.saveProductImage(imageFile, savedProduct);
+                newImage.setProduct(savedProduct);
+                List<Image> newImages = new ArrayList<>();
+                newImages.add(newImage);
+                savedProduct.setImages(newImages);
+            }
+        }
+
+        return productRepository.save(product);
+    }
+
+    private String extractPublicId(String url) {
+        return url.substring(url.lastIndexOf('/') + 1, url.lastIndexOf('.'));
+    }
+
+    public Product updateProductData(Integer id, Product existingProduct, ProductDTO productDTO) {
         Product product = getProductByID(id);
         Provider provider = providerService.getProviderByID(product.getProvider().getId());
 
@@ -145,7 +214,7 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setStatus(productDTO.getStatus() != 0 ? productDTO.getStatus() : existingProduct.getStatus());
         existingProduct.setUpdatedAt(LocalDateTime.now());
 
-        return productRepository.save(existingProduct);
+        return product;
     }
 
     @Override
