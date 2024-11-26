@@ -55,9 +55,29 @@ public class ImageServiceImpl implements ImageService {
         String url = (String) uploadResult.get("url");
 
         Image image = new Image();
-        image.setName(fileName);
+        image.setName(providerName);
         image.setUrl(url);
         image.setProvider(provider);
+
+        return imageRepository.save(image);
+    }
+
+    // Save Product Image
+    public Image saveProductImage(MultipartFile file, Product product) throws IOException {
+        String providerName = product.getName().replaceAll(" ", "_");
+        String fileExtension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+
+        String fileName = providerName + fileExtension;
+
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                ObjectUtils.asMap("public_id", "products/" + fileName));
+
+        String url = (String) uploadResult.get("url");
+
+        Image image = new Image();
+        image.setName(providerName);
+        image.setUrl(url);
+        image.setProduct(product);
 
         return imageRepository.save(image);
     }

@@ -26,17 +26,10 @@ public class ProviderController {
 
     // Create a new Provider
     @PostMapping()
-    public ResponseEntity<Provider> createProvider(@RequestParam("provider") String providerJson,
-                                                   @RequestParam("image") MultipartFile imageFile) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            ProviderDTO providerDTO = objectMapper.readValue(providerJson, ProviderDTO.class);
-
-            Provider savedProvider = providerService.saveProvider(providerDTO, imageFile);
-            return ResponseEntity.ok(savedProvider);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
-        }
+    public ResponseEntity<Provider> createProvider(@ModelAttribute ProviderDTO providerDTO,
+                                                   @RequestParam(value = "imageFile") MultipartFile imageFile) throws IOException {
+        Provider savedProvider = providerService.saveProvider(providerDTO, imageFile);
+        return new ResponseEntity<>(savedProvider, HttpStatus.CREATED);
     }
 
     // Get all Provider
@@ -55,19 +48,11 @@ public class ProviderController {
     @PutMapping("{id}")
     public ResponseEntity<Provider> updateProviderById(
             @PathVariable("id") Integer id,
-            @RequestParam("provider") String providerJson,
-            @RequestParam(value = "image", required = false) MultipartFile imageFile) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            ProviderDTO providerDTO = objectMapper.readValue(providerJson, ProviderDTO.class);
+            @ModelAttribute ProviderDTO providerDTO,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) throws IOException {
 
-            Provider updatedProvider = providerService.updateProviderByID(id, providerDTO, imageFile);
-            return ResponseEntity.ok(updatedProvider);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        Provider updatedProvider = providerService.updateProviderByID(id, providerDTO, imageFile);
+        return new ResponseEntity<>(updatedProvider, HttpStatus.CREATED);
     }
 
     // Delete Provider by id

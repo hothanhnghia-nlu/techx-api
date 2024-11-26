@@ -1,13 +1,18 @@
 package vn.edu.hcmuaf.fit.api.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hcmuaf.fit.api.dto.ProductDTO;
+import vn.edu.hcmuaf.fit.api.dto.ProviderDTO;
 import vn.edu.hcmuaf.fit.api.model.Product;
+import vn.edu.hcmuaf.fit.api.model.Provider;
 import vn.edu.hcmuaf.fit.api.service.ProductService;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -23,8 +28,10 @@ public class ProductController {
     // Create a new Product
     @PostMapping()
     public ResponseEntity<Product> createProduct(@RequestParam int providerId,
-                                                 @RequestBody ProductDTO product) {
-        return new ResponseEntity<>(productService.saveProduct(providerId, product), HttpStatus.CREATED);
+                                                 @ModelAttribute ProductDTO productDTO,
+                                                 @RequestParam(value = "imageFile") MultipartFile imageFile) throws IOException, IOException {
+        Product savedProduct = productService.saveProduct(providerId, productDTO, imageFile);
+        return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
     }
 
     // Get all Product
@@ -42,8 +49,11 @@ public class ProductController {
     // Update Product by id
     @PutMapping("{id}")
     public ResponseEntity<Product> updateProductById(@PathVariable ("id") int id,
-                                                       @RequestBody ProductDTO productDTO) {
-        return new ResponseEntity<>(productService.updateProductByID(id, productDTO), HttpStatus.OK);
+                                                     @ModelAttribute ProductDTO productDTO,
+                                                     @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) throws IOException {
+
+        Product updatedProduct = productService.updateProductByID(id, productDTO, imageFile);
+        return new ResponseEntity<>(updatedProduct, HttpStatus.CREATED);
     }
 
     // Delete Product by id

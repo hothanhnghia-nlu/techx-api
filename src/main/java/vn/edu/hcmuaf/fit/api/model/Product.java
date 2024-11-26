@@ -1,6 +1,7 @@
 package vn.edu.hcmuaf.fit.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -67,8 +68,8 @@ public class Product {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("product")
     private List<Image> images;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
