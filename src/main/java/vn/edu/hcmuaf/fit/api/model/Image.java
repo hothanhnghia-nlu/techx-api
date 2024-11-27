@@ -1,5 +1,6 @@
 package vn.edu.hcmuaf.fit.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -19,6 +20,7 @@ public class Image {
 
     @OneToOne
     @JoinColumn(name = "provider_id")
+    @JsonIgnore
     private Provider provider;
 
     @ManyToOne

@@ -27,8 +27,7 @@ public class Provider {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "provider", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @OneToOne(mappedBy = "provider", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Image image;
 
     @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL)

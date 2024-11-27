@@ -61,7 +61,7 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Override
     public List<ProviderDTO> getProviders() {
-        List<Provider> providers = providerRepository.findAll();
+        List<Provider> providers = providerRepository.findAllWithImages();
 
         return providers.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
