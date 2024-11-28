@@ -33,4 +33,8 @@ public class Cart {
     @Column(name = "order_date")
     private LocalDateTime orderDate;
 
+    @Override
+    public String toString() {
+        return "Cart{id=" + id + ", product=" + (product != null ? product.getName() : "null") + ", quantity=" + quantity + ", price=" + price + "}";
+    }
 }

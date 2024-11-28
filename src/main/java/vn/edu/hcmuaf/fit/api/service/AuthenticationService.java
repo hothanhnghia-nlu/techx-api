@@ -46,7 +46,7 @@ public interface AuthenticationService {
      *
      * @return the user ID if authenticated, null otherwise
      */
-    Long getCurrentUserId();
+    int getCurrentUserId();
 
     /**
      * Verifies a new user registration using the provided token.

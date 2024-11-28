@@ -1,5 +1,6 @@
 package vn.edu.hcmuaf.fit.api.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.api.dto.*;
@@ -8,6 +9,7 @@ import vn.edu.hcmuaf.fit.api.model.*;
 import vn.edu.hcmuaf.fit.api.repository.CartRepository;
 import vn.edu.hcmuaf.fit.api.repository.ProductRepository;
 import vn.edu.hcmuaf.fit.api.repository.UserRepository;
+import vn.edu.hcmuaf.fit.api.service.AuthenticationService;
 import vn.edu.hcmuaf.fit.api.service.CartService;
 
 import java.time.LocalDateTime;
@@ -15,20 +17,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class CartServiceImpl implements CartService {
-    @Autowired
-    private CartRepository cartRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ProductRepository productRepository;
 
-    public CartServiceImpl(CartRepository cartRepository, UserRepository userRepository, ProductRepository productRepository) {
-        this.cartRepository = cartRepository;
-        this.userRepository = userRepository;
-        this.productRepository = productRepository;
-    }
+    private final CartRepository cartRepository;
+
+    private final UserRepository userRepository;
+
+    private final ProductRepository productRepository;
+
+    private final AuthenticationService authenticationService;
+
 
     @Override
     public Cart saveCart(int userId, int productId, CartDTO cartDTO) {
@@ -51,7 +51,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<CartDTO> getCarts() {
+    public List<CartDTO> getAllCarts() {
         List<Cart> carts = cartRepository.findAll();
 
         return carts.stream().map(this::convertToDTO).collect(Collectors.toList());
@@ -110,7 +110,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart getCartByID(Integer id) {
-        return cartRepository.findById(id).orElseThrow(() ->
+        return cartRepository.findById(authenticationService.getCurrentUserId()).orElseThrow(() ->
                 new ResourceNotFoundException("Cart", "Id", id));
     }
 
@@ -142,5 +142,12 @@ public class CartServiceImpl implements CartService {
                 new ResourceNotFoundException("Product", "Id", id));
 
         cartRepository.deleteById(id);
+    }
+
+    @Override
+    public List<CartDTO> getCart() {
+        int id = authenticationService.getCurrentUserId();
+        List<Cart> carts = cartRepository.findByUserId(id);
+        return carts.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 }
