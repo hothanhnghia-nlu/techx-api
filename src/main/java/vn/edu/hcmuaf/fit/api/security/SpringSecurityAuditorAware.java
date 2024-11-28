@@ -10,12 +10,12 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
-public class SpringSecurityAuditorAware implements AuditorAware<Long> {
+public class SpringSecurityAuditorAware implements AuditorAware<Integer> {
 
     private final AuthenticationService authenticationService;
 
     @Override
-    public Optional<Long> getCurrentAuditor() {
+    public Optional<Integer> getCurrentAuditor() {
         return Optional.ofNullable(authenticationService.getCurrentUserId());
     }
 }

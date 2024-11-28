@@ -29,27 +29,33 @@ public class CartController {
     }
 
     // Get all Cart
-    @GetMapping
+    @GetMapping(path = "/getAllCarts")
     public List<CartDTO> getAllCarts() {
-        return cartService.getCarts();
+        return cartService.getAllCarts();
+    }
+
+    // Get Cart
+    @GetMapping(path = "/getCarts")
+    public ResponseEntity<List<CartDTO>> getCarts() {
+        return new ResponseEntity<>(cartService.getCart(), HttpStatus.OK);
     }
 
     // Get Cart by id
     @GetMapping("{id}")
-    public ResponseEntity<Cart> getCartById(@PathVariable ("id") int id) {
+    public ResponseEntity<Cart> getCartById(@PathVariable("id") int id) {
         return new ResponseEntity<>(cartService.getCartByID(id), HttpStatus.OK);
     }
 
     // Update Cart by id
     @PutMapping("{id}")
-    public ResponseEntity<Cart> updateCartById(@PathVariable ("id") int id,
-                                                       @RequestBody CartDTO cartDTO) {
+    public ResponseEntity<Cart> updateCartById(@PathVariable("id") int id,
+                                               @RequestBody CartDTO cartDTO) {
         return new ResponseEntity<>(cartService.updateCartByID(id, cartDTO), HttpStatus.OK);
     }
 
     // Delete Cart by id
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteCartById(@PathVariable ("id") int id) {
+    public ResponseEntity<String> deleteCartById(@PathVariable("id") int id) {
         cartService.deleteCartByID(id);
         return new ResponseEntity<>("Cart " + id + " is deleted successfully!", HttpStatus.OK);
     }

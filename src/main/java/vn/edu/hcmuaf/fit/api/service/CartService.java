@@ -7,9 +7,14 @@ import java.util.List;
 
 public interface CartService {
     Cart saveCart(int userId, int productId, CartDTO cartDTO);
-    List<CartDTO> getCarts();
+
+    List<CartDTO> getAllCarts();
+
     Cart getCartByID(Integer id);
+
     Cart updateCartByID(Integer id, CartDTO cartDTO);
+
     void deleteCartByID(Integer id);
 
+    List<CartDTO> getCart();
 }

@@ -108,8 +108,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Long getCurrentUserId() {
-        return null;
+    public int getCurrentUserId() {
+        return Optional.ofNullable(userDetails())
+                .filter(userDetails -> userDetails instanceof User)
+                .map(userDetails -> ((User) userDetails).getId())
+                .orElse(NO_LOGIN_USER_ID);
     }
 
     @Override
