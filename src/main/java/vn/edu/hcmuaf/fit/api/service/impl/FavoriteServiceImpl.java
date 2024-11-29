@@ -1,17 +1,16 @@
 package vn.edu.hcmuaf.fit.api.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vn.edu.hcmuaf.fit.api.dto.FavoriteDTO;
-import vn.edu.hcmuaf.fit.api.dto.ImageDTO;
-import vn.edu.hcmuaf.fit.api.dto.ProductDTO;
-import vn.edu.hcmuaf.fit.api.dto.UserDTO;
+import vn.edu.hcmuaf.fit.api.dto.*;
 import vn.edu.hcmuaf.fit.api.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.api.model.*;
 import vn.edu.hcmuaf.fit.api.repository.FavoriteRepository;
 import vn.edu.hcmuaf.fit.api.repository.ProductRepository;
 import vn.edu.hcmuaf.fit.api.repository.ProviderRepository;
 import vn.edu.hcmuaf.fit.api.repository.UserRepository;
+import vn.edu.hcmuaf.fit.api.service.AuthenticationService;
 import vn.edu.hcmuaf.fit.api.service.FavoriteService;
 
 import java.time.LocalDateTime;
@@ -19,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class FavoriteServiceImpl implements FavoriteService {
     @Autowired
@@ -27,12 +27,8 @@ public class FavoriteServiceImpl implements FavoriteService {
     private UserRepository userRepository;
     @Autowired
     private ProductRepository productRepository;
-
-    public FavoriteServiceImpl(FavoriteRepository favoriteRepository, UserRepository userRepository, ProductRepository productRepository) {
-        this.favoriteRepository = favoriteRepository;
-        this.userRepository = userRepository;
-        this.productRepository = productRepository;
-    }
+    @Autowired
+    private AuthenticationService authenticationService;
 
     @Override
     public Favorite saveFavorite(int userId, int productId, FavoriteDTO favoriteDTO) {
@@ -43,7 +39,6 @@ public class FavoriteServiceImpl implements FavoriteService {
                 new ResourceNotFoundException("Product", "Id", favoriteDTO.getId()));
 
         Favorite favorite = new Favorite();
-        favorite.setId(favoriteDTO.getId());
         favorite.setUser(user);
         favorite.setProduct(product);
         favorite.setStatus((byte) 1);
@@ -53,9 +48,16 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
-    public List<FavoriteDTO> getFavorites() {
+    public List<FavoriteDTO> getAllFavorites() {
         List<Favorite> favorites = favoriteRepository.findAll();
 
+        return favorites.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FavoriteDTO> getFavoriteByUser() {
+        int id = authenticationService.getCurrentUserId();
+        List<Favorite> favorites = favoriteRepository.findByUserId(id);
         return favorites.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 

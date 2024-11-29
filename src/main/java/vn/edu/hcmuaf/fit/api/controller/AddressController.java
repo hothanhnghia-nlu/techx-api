@@ -28,9 +28,15 @@ public class AddressController {
     }
 
     // Get all Address
-    @GetMapping
+    @GetMapping(path = "/getAllAddresses")
     public List<AddressDTO> getAllAddresses() {
-        return addressService.getAddresses();
+        return addressService.getAllAddresses();
+    }
+
+    // Get Address by user
+    @GetMapping(path = "/getAddressesByUser")
+    public ResponseEntity<List<AddressDTO>> getAddressesByUser() {
+        return new ResponseEntity<>(addressService.getAddressesByUser(), HttpStatus.OK);
     }
 
     // Get Address by id

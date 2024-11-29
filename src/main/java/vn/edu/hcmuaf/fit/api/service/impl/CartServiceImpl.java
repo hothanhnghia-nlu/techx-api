@@ -39,7 +39,6 @@ public class CartServiceImpl implements CartService {
                 new ResourceNotFoundException("Product", "Id", cartDTO.getId()));
 
         Cart cart = new Cart();
-        cart.setId(cartDTO.getId());
         cart.setUser(user);
         cart.setProduct(product);
         cart.setQuantity(cartDTO.getQuantity());
@@ -54,6 +53,13 @@ public class CartServiceImpl implements CartService {
     public List<CartDTO> getAllCarts() {
         List<Cart> carts = cartRepository.findAll();
 
+        return carts.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CartDTO> getCartByUser() {
+        int id = authenticationService.getCurrentUserId();
+        List<Cart> carts = cartRepository.findByUserId(id);
         return carts.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
@@ -144,10 +150,4 @@ public class CartServiceImpl implements CartService {
         cartRepository.deleteById(id);
     }
 
-    @Override
-    public List<CartDTO> getCart() {
-        int id = authenticationService.getCurrentUserId();
-        List<Cart> carts = cartRepository.findByUserId(id);
-        return carts.stream().map(this::convertToDTO).collect(Collectors.toList());
-    }
 }

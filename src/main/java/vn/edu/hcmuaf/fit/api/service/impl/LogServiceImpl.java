@@ -1,5 +1,6 @@
 package vn.edu.hcmuaf.fit.api.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.api.dto.LogDTO;
@@ -13,6 +14,7 @@ import vn.edu.hcmuaf.fit.api.service.LogService;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class LogServiceImpl implements LogService {
     @Autowired
@@ -22,18 +24,12 @@ public class LogServiceImpl implements LogService {
     @Autowired
     private UserServiceImpl userService;
 
-    public LogServiceImpl(LogRepository logRepository, UserRepository userRepository) {
-        this.logRepository = logRepository;
-        this.userRepository = userRepository;
-    }
-
     @Override
     public Log saveLog(int userId, LogDTO logDTO) {
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new ResourceNotFoundException("User", "Id", logDTO.getId()));
 
         Log log = new Log();
-        log.setId(logDTO.getId());
         log.setUser(user);
         log.setLevel(logDTO.getLevel());
         log.setSource(logDTO.getSource());

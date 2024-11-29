@@ -1,6 +1,5 @@
 package vn.edu.hcmuaf.fit.api.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -17,4 +16,15 @@ public class AddressDTO {
     private byte status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public AddressDTO() {
+    }
+
+    public AddressDTO(Integer id, String detail, String ward, String city, String province) {
+        this.id = id;
+        this.detail = detail;
+        this.ward = ward;
+        this.city = city;
+        this.province = province;
+    }
 }

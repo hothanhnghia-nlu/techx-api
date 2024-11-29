@@ -11,7 +11,7 @@ import vn.edu.hcmuaf.fit.api.service.ReviewService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/reviews")
+@RequestMapping("api/v1/reviews")
 public class ReviewController {
     @Autowired
     private ReviewService reviewService;
@@ -32,6 +32,12 @@ public class ReviewController {
     @GetMapping
     public List<ReviewDTO> getAllReviews() {
         return reviewService.getReviews();
+    }
+
+    // Get all Review by Product
+    @GetMapping("/by-product")
+    public List<ReviewDTO> getAllReviewsByProduct(@RequestParam("productId") int productId) {
+        return reviewService.getReviewsByProduct(productId);
     }
 
     // Get Review by id

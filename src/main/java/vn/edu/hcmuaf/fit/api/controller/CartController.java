@@ -34,10 +34,10 @@ public class CartController {
         return cartService.getAllCarts();
     }
 
-    // Get Cart
-    @GetMapping(path = "/getCarts")
-    public ResponseEntity<List<CartDTO>> getCarts() {
-        return new ResponseEntity<>(cartService.getCart(), HttpStatus.OK);
+    // Get Cart by user
+    @GetMapping(path = "/getCartsByUser")
+    public ResponseEntity<List<CartDTO>> getCartsByUser() {
+        return new ResponseEntity<>(cartService.getCartByUser(), HttpStatus.OK);
     }
 
     // Get Cart by id

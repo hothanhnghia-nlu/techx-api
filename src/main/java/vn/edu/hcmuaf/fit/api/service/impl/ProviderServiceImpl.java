@@ -2,6 +2,7 @@ package vn.edu.hcmuaf.fit.api.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class ProviderServiceImpl implements ProviderService {
     @Autowired
@@ -37,16 +39,10 @@ public class ProviderServiceImpl implements ProviderService {
     @Autowired
     private Cloudinary cloudinary;
 
-    public ProviderServiceImpl(ProviderRepository providerRepository, ImageRepository imageRepository) {
-        this.providerRepository = providerRepository;
-        this.imageRepository = imageRepository;
-    }
-
     @Override
     @Transactional
     public Provider saveProvider(ProviderDTO providerDTO, MultipartFile imageFile) throws IOException {
         Provider provider = new Provider();
-        provider.setId(providerDTO.getId());
         provider.setName(providerDTO.getName());
         provider.setStatus((byte) 1);
         provider.setCreatedAt(LocalDateTime.now());

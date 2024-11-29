@@ -1,39 +1,119 @@
 package vn.edu.hcmuaf.fit.api.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vn.edu.hcmuaf.fit.api.dto.OrderDTO;
+import vn.edu.hcmuaf.fit.api.dto.*;
 import vn.edu.hcmuaf.fit.api.exception.ResourceNotFoundException;
-import vn.edu.hcmuaf.fit.api.model.Order;
-import vn.edu.hcmuaf.fit.api.repository.OrderRepository;
+import vn.edu.hcmuaf.fit.api.model.*;
+import vn.edu.hcmuaf.fit.api.repository.*;
+import vn.edu.hcmuaf.fit.api.service.AuthenticationService;
 import vn.edu.hcmuaf.fit.api.service.OrderService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepository orderRepository;
-
-    public OrderServiceImpl(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-    }
+    @Autowired
+    private AuthenticationService authenticationService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private AddressRepository addressRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
     @Override
-    public Order saveOrder(OrderDTO orderDTO) {
+    public Order saveOrder(int userId, int addressId, OrderDTO orderDTO) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", userId));
+        Address address = addressRepository.findById(addressId).orElseThrow(() ->
+                new ResourceNotFoundException("Address", "Id", addressId));
+
         Order order = new Order();
-        order.setId(orderDTO.getId());
-//        order.setName(orderDTO.getName());
-        order.setStatus((byte) 1);
+        order.setUser(user);
+        order.setAddress(address);
+        order.setTotal(orderDTO.getTotal());
+        order.setPaymentMethod(orderDTO.getPaymentMethod());
+        order.setNote(orderDTO.getNote());
         order.setOrderDate(LocalDateTime.now());
+        order.setStatus((byte) 1);
+
+        order.setOrderDetails(new ArrayList<>());
+
+        for (OrderDetailDTO orderDetailDTO : orderDTO.getOrderDetails()) {
+            Product product = productRepository.findById(orderDetailDTO.getProduct().getId()).orElseThrow(() ->
+                    new ResourceNotFoundException("Product", "Id", orderDetailDTO.getProduct().getId()));
+
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setProduct(product);
+            orderDetail.setQuantity(orderDetailDTO.getQuantity());
+            orderDetail.setPrice(orderDetailDTO.getPrice());
+            orderDetail.setOrder(order);
+
+            order.getOrderDetails().add(orderDetail);
+        }
 
         return orderRepository.save(order);
     }
 
     @Override
-    public List<Order> getOrders() {
-        return orderRepository.findAll();
+    public List<OrderDTO> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+
+        return orders.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<OrderDTO> getOrderByUser() {
+        int id = authenticationService.getCurrentUserId();
+        List<Order> orders = orderRepository.findByUserId(id);
+        return orders.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    private OrderDTO convertToDTO(Order order) {
+        UserDTO userDTO = null;
+        AddressDTO addressDTO = null;
+        User user = order.getUser();
+        Address address = order.getAddress();
+
+        if (user != null) {
+            userDTO = new UserDTO(
+                    user.getId(),
+                    user.getFullName(),
+                    user.getEmail(),
+                    user.getPhoneNumber()
+            );
+        }
+
+        if (address != null) {
+            addressDTO = new AddressDTO(
+                    address.getId(),
+                    address.getDetail(),
+                    address.getWard(),
+                    address.getCity(),
+                    address.getProvince()
+            );
+        }
+
+        OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setId(order.getId());
+        orderDTO.setUser(userDTO);
+        orderDTO.setAddress(addressDTO);
+        orderDTO.setTotal(order.getTotal());
+        orderDTO.setPaymentMethod(order.getPaymentMethod());
+        orderDTO.setNote(order.getNote());
+        orderDTO.setOrderDate(order.getOrderDate());
+        orderDTO.setPaymentDate(order.getPaymentDate());
+        orderDTO.setStatus(order.getStatus());
+
+        return orderDTO;
     }
 
     @Override
@@ -47,7 +127,6 @@ public class OrderServiceImpl implements OrderService {
         Order existingOrder = orderRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Order", "Id", id));
 
-//        existingOrder.setName(orderDTO.getName() != null ? orderDTO.getName() : existingOrder.getName());
         existingOrder.setStatus(orderDTO.getStatus() != 0 ? orderDTO.getStatus() : existingOrder.getStatus());
         existingOrder.setPaymentDate(LocalDateTime.now());
 

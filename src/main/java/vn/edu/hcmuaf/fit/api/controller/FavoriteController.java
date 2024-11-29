@@ -29,9 +29,15 @@ public class FavoriteController {
     }
 
     // Get all Favorite
-    @GetMapping
+    @GetMapping(path = "/getAllFavorites")
     public List<FavoriteDTO> getAllFavorites() {
-        return favoriteService.getFavorites();
+        return favoriteService.getAllFavorites();
+    }
+
+    // Get Favorite by user
+    @GetMapping(path = "/getFavoritesByUser")
+    public ResponseEntity<List<FavoriteDTO>> getFavoritesByUser() {
+        return new ResponseEntity<>(favoriteService.getFavoriteByUser(), HttpStatus.OK);
     }
 
     // Get Favorite by id
