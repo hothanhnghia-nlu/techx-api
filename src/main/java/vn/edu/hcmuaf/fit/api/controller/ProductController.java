@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hcmuaf.fit.api.dto.ProductDTO;
 import vn.edu.hcmuaf.fit.api.dto.ProviderDTO;
+import vn.edu.hcmuaf.fit.api.dto.ReviewDTO;
 import vn.edu.hcmuaf.fit.api.model.Product;
 import vn.edu.hcmuaf.fit.api.model.Provider;
 import vn.edu.hcmuaf.fit.api.service.ProductService;
@@ -38,6 +39,12 @@ public class ProductController {
     @GetMapping
     public List<ProductDTO> getAllProducts() {
         return productService.getProducts();
+    }
+
+    // Get all Product
+    @GetMapping("/by-provider")
+    public List<ProductDTO> getAllProductsByProvider(@RequestParam("providerId") int providerId) {
+        return productService.getProductsByProvider(providerId);
     }
 
     // Get Product by id

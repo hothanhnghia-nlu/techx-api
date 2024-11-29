@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.api.dto.OrderDTO;
+import vn.edu.hcmuaf.fit.api.dto.OrderDTO;
 import vn.edu.hcmuaf.fit.api.model.Order;
 import vn.edu.hcmuaf.fit.api.service.OrderService;
 
@@ -22,14 +23,22 @@ public class OrderController {
 
     // Create a new Order
     @PostMapping()
-    public ResponseEntity<Order> createOrder(@RequestBody OrderDTO order) {
-        return new ResponseEntity<>(orderService.saveOrder(order), HttpStatus.CREATED);
+    public ResponseEntity<Order> createOrder(@RequestParam int userId,
+                                             @RequestParam int addressId,
+                                             @RequestBody OrderDTO order) {
+        return new ResponseEntity<>(orderService.saveOrder(userId, addressId, order), HttpStatus.CREATED);
     }
 
     // Get all Order
-    @GetMapping
-    public List<Order> getAllOrders() {
-        return orderService.getOrders();
+    @GetMapping(path = "/getAllOrders")
+    public List<OrderDTO> getAllOrders() {
+        return orderService.getAllOrders();
+    }
+
+    // Get Order by user
+    @GetMapping(path = "/getOrdersByUser")
+    public ResponseEntity<List<OrderDTO>> getOrdersByUser() {
+        return new ResponseEntity<>(orderService.getOrderByUser(), HttpStatus.OK);
     }
 
     // Get Order by id

@@ -30,7 +30,7 @@ public class Provider {
     @OneToOne(mappedBy = "provider", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Image image;
 
-    @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Product> products;
 

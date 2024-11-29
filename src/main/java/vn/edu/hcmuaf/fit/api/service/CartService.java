@@ -10,11 +10,11 @@ public interface CartService {
 
     List<CartDTO> getAllCarts();
 
+    List<CartDTO> getCartByUser();
+
     Cart getCartByID(Integer id);
 
     Cart updateCartByID(Integer id, CartDTO cartDTO);
 
     void deleteCartByID(Integer id);
-
-    List<CartDTO> getCart();
 }

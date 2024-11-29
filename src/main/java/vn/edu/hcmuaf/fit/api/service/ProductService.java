@@ -10,6 +10,7 @@ import java.util.List;
 public interface ProductService {
     Product saveProduct(int providerId, ProductDTO productDTO, MultipartFile imageFile) throws IOException;
     List<ProductDTO> getProducts();
+    List<ProductDTO> getProductsByProvider(int providerId);
     Product getProductByID(Integer id);
     Product updateProductByID(Integer id, ProductDTO productDTO, MultipartFile imageFile) throws IOException;
     void deleteProductByID(Integer id);

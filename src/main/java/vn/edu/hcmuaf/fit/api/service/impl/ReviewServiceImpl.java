@@ -1,5 +1,6 @@
 package vn.edu.hcmuaf.fit.api.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.api.dto.*;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class ReviewServiceImpl implements ReviewService {
     @Autowired
@@ -26,12 +28,6 @@ public class ReviewServiceImpl implements ReviewService {
     private UserRepository userRepository;
     @Autowired
     private ProductRepository productRepository;
-
-    public ReviewServiceImpl(ReviewRepository reviewRepository, UserRepository userRepository, ProductRepository productRepository) {
-        this.reviewRepository = reviewRepository;
-        this.userRepository = userRepository;
-        this.productRepository = productRepository;
-    }
 
     @Override
     public Review saveReview(int userId, int productId, ReviewDTO reviewDTO) {
@@ -42,9 +38,10 @@ public class ReviewServiceImpl implements ReviewService {
                 new ResourceNotFoundException("Product", "Id", reviewDTO.getId()));
 
         Review review = new Review();
-        review.setId(reviewDTO.getId());
         review.setUser(user);
         review.setProduct(product);
+        review.setRating(reviewDTO.getRating());
+        review.setComment(reviewDTO.getComment());
         review.setStatus((byte) 1);
         review.setCreatedAt(LocalDateTime.now());
 
@@ -54,7 +51,12 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<ReviewDTO> getReviews() {
         List<Review> reviews = reviewRepository.findAll();
+        return reviews.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
 
+    @Override
+    public List<ReviewDTO> getReviewsByProduct(int productId) {
+        List<Review> reviews = reviewRepository.findByProductId(productId);
         return reviews.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 

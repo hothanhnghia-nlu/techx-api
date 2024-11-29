@@ -2,6 +2,7 @@ package vn.edu.hcmuaf.fit.api.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class ProductServiceImpl implements ProductService {
     @Autowired
@@ -43,11 +45,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private Cloudinary cloudinary;
-
-    public ProductServiceImpl(ProductRepository productRepository, ProviderRepository providerRepository) {
-        this.productRepository = productRepository;
-        this.providerRepository = providerRepository;
-    }
 
     @Override
     public Product saveProduct(int providerId, ProductDTO productDTO, MultipartFile imageFile) throws IOException {
@@ -72,7 +69,6 @@ public class ProductServiceImpl implements ProductService {
     public static Product transferProductData(Provider provider, ProductDTO productDTO) {
         Product product = new Product();
 
-        product.setId(productDTO.getId());
         product.setName(productDTO.getName());
         product.setProvider(provider);
         product.setOriginalPrice(productDTO.getOriginalPrice());
@@ -96,6 +92,13 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDTO> getProducts() {
         List<Product> products = productRepository.findAll();
+
+        return products.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductDTO> getProductsByProvider(int providerId) {
+        List<Product> products = productRepository.findByProviderId(providerId);
 
         return products.stream().map(this::convertToDTO).collect(Collectors.toList());
     }

@@ -16,11 +16,11 @@ public class Order {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "address_id")
+    @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
     @Column(name = "total")
@@ -41,7 +41,7 @@ public class Order {
     @Column(name = "status")
     private byte status;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<OrderDetail> orderDetails;
 
