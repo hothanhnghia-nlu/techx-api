@@ -1,7 +1,6 @@
 package vn.edu.hcmuaf.fit.api.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.api.dto.*;
 import vn.edu.hcmuaf.fit.api.exception.ResourceNotFoundException;
@@ -31,18 +30,19 @@ public class CartServiceImpl implements CartService {
 
 
     @Override
-    public Cart saveCart(int userId, int productId, CartDTO cartDTO) {
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new ResourceNotFoundException("User", "Id", cartDTO.getId()));
+    public Cart saveCart(int productId) {
+        int id = authenticationService.getCurrentUserId();
+        User user = userRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", id));
 
         Product product = productRepository.findById(productId).orElseThrow(() ->
-                new ResourceNotFoundException("Product", "Id", cartDTO.getId()));
+                new ResourceNotFoundException("Product", "Id", productId));
 
         Cart cart = new Cart();
         cart.setUser(user);
         cart.setProduct(product);
-        cart.setQuantity(cartDTO.getQuantity());
-        cart.setPrice(cartDTO.getPrice());
+        cart.setQuantity(1);
+        cart.setPrice(product.getNewPrice());
         cart.setStatus((byte) 1);
         cart.setOrderDate(LocalDateTime.now());
 
@@ -157,12 +157,6 @@ public class CartServiceImpl implements CartService {
     public void deleteCartByID(Integer id) {
         cartRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Cart", "Id", id));
-
-        userRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("User", "Id", id));
-
-        productRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Product", "Id", id));
 
         cartRepository.deleteById(id);
     }

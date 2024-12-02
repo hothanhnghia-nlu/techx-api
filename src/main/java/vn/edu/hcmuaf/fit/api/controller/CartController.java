@@ -22,10 +22,8 @@ public class CartController {
 
     // Create a new Cart
     @PostMapping()
-    public ResponseEntity<Cart> createCart(@RequestParam int userId,
-                                           @RequestParam int productId,
-                                           @RequestBody CartDTO cart) {
-        return new ResponseEntity<>(cartService.saveCart(userId, productId, cart), HttpStatus.CREATED);
+    public ResponseEntity<Cart> createCart(@RequestParam int productId) {
+        return new ResponseEntity<>(cartService.saveCart(productId), HttpStatus.CREATED);
     }
 
     // Get all Cart

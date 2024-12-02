@@ -6,7 +6,7 @@ import vn.edu.hcmuaf.fit.api.model.Cart;
 import java.util.List;
 
 public interface CartService {
-    Cart saveCart(int userId, int productId, CartDTO cartDTO);
+    Cart saveCart(int productId);
     List<CartDTO> getAllCarts();
     List<CartDTO> getCartByUser();
     Cart getCartByID(Integer id);
