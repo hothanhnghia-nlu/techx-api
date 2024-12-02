@@ -121,6 +121,18 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    public int getQuantityInCart() {
+        int id = authenticationService.getCurrentUserId();
+        if (id != 0) {
+            return getCartByUser().stream()
+                    .mapToInt(CartDTO::getQuantity)
+                    .sum();
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
     public Cart updateCartByID(Integer id, CartDTO cartDTO) {
         Cart existingCart = cartRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Cart", "Id", id));
@@ -134,6 +146,11 @@ public class CartServiceImpl implements CartService {
         existingCart.setStatus(cartDTO.getStatus() != 0 ? cartDTO.getStatus() : existingCart.getStatus());
 
         return cartRepository.save(existingCart);
+    }
+
+    @Override
+    public void deleteAllCart() {
+        cartRepository.deleteAll();
     }
 
     @Override
