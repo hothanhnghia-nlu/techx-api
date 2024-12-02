@@ -40,6 +40,12 @@ public class CartController {
         return new ResponseEntity<>(cartService.getCartByUser(), HttpStatus.OK);
     }
 
+    // Get Quantity in Cart
+    @GetMapping(path = "/quantity")
+    public ResponseEntity<Integer> getCartQuantity() {
+        return new ResponseEntity<>(cartService.getQuantityInCart(), HttpStatus.OK);
+    }
+
     // Get Cart by id
     @GetMapping("{id}")
     public ResponseEntity<Cart> getCartById(@PathVariable("id") int id) {
@@ -51,6 +57,13 @@ public class CartController {
     public ResponseEntity<Cart> updateCartById(@PathVariable("id") int id,
                                                @RequestBody CartDTO cartDTO) {
         return new ResponseEntity<>(cartService.updateCartByID(id, cartDTO), HttpStatus.OK);
+    }
+
+    // Delete all Cart
+    @DeleteMapping()
+    public ResponseEntity<String> deleteCart() {
+        cartService.deleteAllCart();
+        return new ResponseEntity<>("All of cart is deleted successfully!", HttpStatus.OK);
     }
 
     // Delete Cart by id
