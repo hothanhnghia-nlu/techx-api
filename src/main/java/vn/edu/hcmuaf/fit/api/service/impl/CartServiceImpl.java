@@ -150,7 +150,8 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public void deleteAllCart() {
-        cartRepository.deleteAll();
+        int id = authenticationService.getCurrentUserId();
+        cartRepository.deleteAllByUserId(id);
     }
 
     @Override
