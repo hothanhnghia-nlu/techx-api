@@ -22,10 +22,9 @@ public class FavoriteController {
 
     // Create a new Favorite
     @PostMapping()
-    public ResponseEntity<Favorite> createFavorite(@RequestParam int userId,
-                                                   @RequestParam int productId,
+    public ResponseEntity<Favorite> createFavorite(@RequestParam int productId,
                                                    @RequestBody FavoriteDTO favorite) {
-        return new ResponseEntity<>(favoriteService.saveFavorite(userId, productId, favorite), HttpStatus.CREATED);
+        return new ResponseEntity<>(favoriteService.saveFavorite(productId, favorite), HttpStatus.CREATED);
     }
 
     // Get all Favorite

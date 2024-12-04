@@ -7,11 +7,10 @@ import vn.edu.hcmuaf.fit.api.model.Order;
 import java.util.List;
 
 public interface OrderService {
-    Order saveOrder(int userId, int addressId, OrderDTO orderDTO);
+    Order saveOrder(int addressId, OrderDTO orderDTO);
     List<OrderDTO> getAllOrders();
     List<OrderDTO> getOrderByUser();
-    Order getOrderByID(Integer id);
+    OrderDTO getOrderByID(Integer id);
     Order updateOrderByID(Integer id, OrderDTO orderDTO);
-    void deleteOrderByID(Integer id);
 
 }

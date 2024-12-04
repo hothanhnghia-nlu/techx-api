@@ -31,7 +31,9 @@ public class FavoriteServiceImpl implements FavoriteService {
     private AuthenticationService authenticationService;
 
     @Override
-    public Favorite saveFavorite(int userId, int productId, FavoriteDTO favoriteDTO) {
+    public Favorite saveFavorite(int productId, FavoriteDTO favoriteDTO) {
+        int userId = authenticationService.getCurrentUserId();
+
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new ResourceNotFoundException("User", "Id", favoriteDTO.getId()));
 
@@ -121,11 +123,10 @@ public class FavoriteServiceImpl implements FavoriteService {
         favoriteRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Favorite", "Id", id));
 
-        userRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("User", "Id", id));
+        int userId = authenticationService.getCurrentUserId();
 
-        productRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Product", "Id", id));
+        userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", userId));
 
         favoriteRepository.deleteById(id);
     }

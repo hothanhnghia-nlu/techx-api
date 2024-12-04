@@ -27,7 +27,9 @@ public class AddressServiceImpl implements AddressService {
     private AuthenticationService authenticationService;
 
     @Override
-    public Address saveAddress(int userId, AddressDTO addressDTO) {
+    public Address saveAddress(AddressDTO addressDTO) {
+        int userId = authenticationService.getCurrentUserId();
+
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new ResourceNotFoundException("User", "Id", addressDTO.getId()));
 
@@ -88,9 +90,10 @@ public class AddressServiceImpl implements AddressService {
 
 
     @Override
-    public Address getAddressByID(Integer id) {
-        return addressRepository.findById(id).orElseThrow(() ->
+    public AddressDTO getAddressByID(Integer id) {
+        Address address = addressRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Address", "Id", id));
+        return convertToDTO(address);
     }
 
     @Override
@@ -114,7 +117,9 @@ public class AddressServiceImpl implements AddressService {
         addressRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Address", "Id", id));
 
-        userRepository.findById(id).orElseThrow(() ->
+        int userId = authenticationService.getCurrentUserId();
+
+        userRepository.findById(userId).orElseThrow(() ->
                 new ResourceNotFoundException("User", "Id", id));
 
         addressRepository.deleteById(id);
