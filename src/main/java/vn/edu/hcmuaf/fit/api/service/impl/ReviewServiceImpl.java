@@ -12,6 +12,7 @@ import vn.edu.hcmuaf.fit.api.model.User;
 import vn.edu.hcmuaf.fit.api.repository.ProductRepository;
 import vn.edu.hcmuaf.fit.api.repository.ReviewRepository;
 import vn.edu.hcmuaf.fit.api.repository.UserRepository;
+import vn.edu.hcmuaf.fit.api.service.AuthenticationService;
 import vn.edu.hcmuaf.fit.api.service.ReviewService;
 
 import java.time.LocalDateTime;
@@ -28,9 +29,13 @@ public class ReviewServiceImpl implements ReviewService {
     private UserRepository userRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private AuthenticationService authenticationService;
 
     @Override
-    public Review saveReview(int userId, int productId, ReviewDTO reviewDTO) {
+    public Review saveReview(int productId, ReviewDTO reviewDTO) {
+        int userId = authenticationService.getCurrentUserId();
+
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new ResourceNotFoundException("User", "Id", reviewDTO.getId()));
 
@@ -123,11 +128,10 @@ public class ReviewServiceImpl implements ReviewService {
         reviewRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Review", "Id", id));
 
-        userRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("User", "Id", id));
+        int userId = authenticationService.getCurrentUserId();
 
-        productRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Product", "Id", id));
+        userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", userId));
 
         reviewRepository.deleteById(id);
     }

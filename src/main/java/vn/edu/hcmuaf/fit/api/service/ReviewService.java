@@ -6,7 +6,7 @@ import vn.edu.hcmuaf.fit.api.model.Review;
 import java.util.List;
 
 public interface ReviewService {
-    Review saveReview(int userId, int productId, ReviewDTO reviewDTO);
+    Review saveReview(int productId, ReviewDTO reviewDTO);
     List<ReviewDTO> getReviews();
     List<ReviewDTO> getReviewsByProduct(int productId);
     Review getReviewByID(Integer id);
