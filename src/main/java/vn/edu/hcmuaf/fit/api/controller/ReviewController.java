@@ -22,10 +22,9 @@ public class ReviewController {
 
     // Create a new Review
     @PostMapping()
-    public ResponseEntity<Review> createReview(@RequestParam int userId,
-                                               @RequestParam int productId,
+    public ResponseEntity<Review> createReview(@RequestParam int productId,
                                                @RequestBody ReviewDTO review) {
-        return new ResponseEntity<>(reviewService.saveReview(userId, productId, review), HttpStatus.CREATED);
+        return new ResponseEntity<>(reviewService.saveReview(productId, review), HttpStatus.CREATED);
     }
 
     // Get all Review
