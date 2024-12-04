@@ -41,7 +41,7 @@ public class ProductController {
         return productService.getProducts();
     }
 
-    // Get all Product
+    // Get all Product by Provider
     @GetMapping("/by-provider")
     public List<ProductDTO> getAllProductsByProvider(@RequestParam("providerId") int providerId) {
         return productService.getProductsByProvider(providerId);

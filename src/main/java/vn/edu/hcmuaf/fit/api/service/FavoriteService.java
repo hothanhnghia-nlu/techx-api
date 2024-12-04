@@ -7,7 +7,7 @@ import vn.edu.hcmuaf.fit.api.model.Favorite;
 import java.util.List;
 
 public interface FavoriteService {
-    Favorite saveFavorite(int userId, int productId, FavoriteDTO favoriteDTO);
+    Favorite saveFavorite(int productId, FavoriteDTO favoriteDTO);
     List<FavoriteDTO> getAllFavorites();
     List<FavoriteDTO> getFavoriteByUser();
     Favorite getFavoriteByID(Integer id);

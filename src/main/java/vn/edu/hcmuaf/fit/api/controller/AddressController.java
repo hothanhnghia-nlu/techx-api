@@ -22,9 +22,8 @@ public class AddressController {
 
     // Create a new Address
     @PostMapping()
-    public ResponseEntity<Address> createAddress(@RequestParam int userId,
-                                                 @RequestBody AddressDTO address) {
-        return new ResponseEntity<>(addressService.saveAddress(userId, address), HttpStatus.CREATED);
+    public ResponseEntity<Address> createAddress(@RequestBody AddressDTO address) {
+        return new ResponseEntity<>(addressService.saveAddress(address), HttpStatus.CREATED);
     }
 
     // Get all Address
@@ -41,7 +40,7 @@ public class AddressController {
 
     // Get Address by id
     @GetMapping("{id}")
-    public ResponseEntity<Address> getAddressById(@PathVariable ("id") int id) {
+    public ResponseEntity<AddressDTO> getAddressById(@PathVariable ("id") int id) {
         return new ResponseEntity<>(addressService.getAddressByID(id), HttpStatus.OK);
     }
 

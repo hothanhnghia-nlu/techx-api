@@ -19,4 +19,16 @@ public class OrderDTO {
     private LocalDateTime paymentDate;
     private byte status;
     private List<OrderDetailDTO> orderDetails;
+
+    public OrderDTO() {
+    }
+
+    public OrderDTO(Integer id, double total, String paymentMethod, String note, LocalDateTime orderDate, LocalDateTime paymentDate) {
+        this.id = id;
+        this.total = total;
+        this.paymentMethod = paymentMethod;
+        this.note = note;
+        this.orderDate = orderDate;
+        this.paymentDate = paymentDate;
+    }
 }

@@ -23,10 +23,9 @@ public class OrderController {
 
     // Create a new Order
     @PostMapping()
-    public ResponseEntity<Order> createOrder(@RequestParam int userId,
-                                             @RequestParam int addressId,
+    public ResponseEntity<Order> createOrder(@RequestParam int addressId,
                                              @RequestBody OrderDTO order) {
-        return new ResponseEntity<>(orderService.saveOrder(userId, addressId, order), HttpStatus.CREATED);
+        return new ResponseEntity<>(orderService.saveOrder(addressId, order), HttpStatus.CREATED);
     }
 
     // Get all Order
@@ -43,7 +42,7 @@ public class OrderController {
 
     // Get Order by id
     @GetMapping("{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable ("id") int id) {
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable ("id") int id) {
         return new ResponseEntity<>(orderService.getOrderByID(id), HttpStatus.OK);
     }
 
@@ -52,13 +51,6 @@ public class OrderController {
     public ResponseEntity<Order> updateOrderById(@PathVariable ("id") int id,
                                                        @RequestBody OrderDTO orderDTO) {
         return new ResponseEntity<>(orderService.updateOrderByID(id, orderDTO), HttpStatus.OK);
-    }
-
-    // Delete Order by id
-    @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteOrderById(@PathVariable ("id") int id) {
-        orderService.deleteOrderByID(id);
-        return new ResponseEntity<>("Order " + id + " is deleted successfully!", HttpStatus.OK);
     }
 
 }

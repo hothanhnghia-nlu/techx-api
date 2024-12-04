@@ -30,9 +30,12 @@ public class OrderServiceImpl implements OrderService {
     private ProductRepository productRepository;
 
     @Override
-    public Order saveOrder(int userId, int addressId, OrderDTO orderDTO) {
+    public Order saveOrder(int addressId, OrderDTO orderDTO) {
+        int userId = authenticationService.getCurrentUserId();
+
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new ResourceNotFoundException("User", "Id", userId));
+
         Address address = addressRepository.findById(addressId).orElseThrow(() ->
                 new ResourceNotFoundException("Address", "Id", addressId));
 
@@ -117,9 +120,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order getOrderByID(Integer id) {
-        return orderRepository.findById(id).orElseThrow(() ->
+    public OrderDTO getOrderByID(Integer id) {
+        Order order = orderRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Order", "Id", id));
+        return convertToDTO(order);
     }
 
     @Override
@@ -128,16 +132,9 @@ public class OrderServiceImpl implements OrderService {
                 new ResourceNotFoundException("Order", "Id", id));
 
         existingOrder.setStatus(orderDTO.getStatus() != 0 ? orderDTO.getStatus() : existingOrder.getStatus());
-        existingOrder.setPaymentDate(LocalDateTime.now());
+        existingOrder.setPaymentDate(orderDTO.getPaymentDate() != null ? orderDTO.getPaymentDate() : existingOrder.getPaymentDate());
 
         return orderRepository.save(existingOrder);
     }
 
-    @Override
-    public void deleteOrderByID(Integer id) {
-        orderRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Order", "Id", id));
-
-        orderRepository.deleteById(id);
-    }
 }

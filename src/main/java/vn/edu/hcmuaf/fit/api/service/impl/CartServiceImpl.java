@@ -1,6 +1,7 @@
 package vn.edu.hcmuaf.fit.api.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.api.dto.*;
 import vn.edu.hcmuaf.fit.api.exception.ResourceNotFoundException;
@@ -19,21 +20,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class CartServiceImpl implements CartService {
-
-    private final CartRepository cartRepository;
-
-    private final UserRepository userRepository;
-
-    private final ProductRepository productRepository;
-
-    private final AuthenticationService authenticationService;
-
+    @Autowired
+    private CartRepository cartRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private AuthenticationService authenticationService;
 
     @Override
     public Cart saveCart(int productId) {
-        int id = authenticationService.getCurrentUserId();
-        User user = userRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("User", "Id", id));
+        int userId = authenticationService.getCurrentUserId();
+
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", userId));
 
         Product product = productRepository.findById(productId).orElseThrow(() ->
                 new ResourceNotFoundException("Product", "Id", productId));
