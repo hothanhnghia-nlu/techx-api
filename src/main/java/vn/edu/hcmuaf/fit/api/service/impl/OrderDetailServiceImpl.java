@@ -104,12 +104,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
     @Override
-    public OrderDetailDTO getOrderDetailByStatus(int status) {
-        OrderDetail orderDetail = orderDetailRepository.findByOrderStatus(status);
-        return convertToDTO(orderDetail);
-    }
-
-    @Override
     public OrderDetailDTO getOrderDetailByID(Integer id) {
         OrderDetail orderDetail = orderDetailRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("OrderDetail", "Id", id));

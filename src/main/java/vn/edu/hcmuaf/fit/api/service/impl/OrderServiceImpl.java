@@ -89,6 +89,12 @@ public class OrderServiceImpl implements OrderService {
         return orders.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    @Override
+    public List<OrderDTO> getOrderByStatus(int status) {
+        List<Order> orders = orderRepository.findByStatus(status);
+        return orders.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
     private OrderDTO convertToDTO(Order order) {
         UserDTO userDTO = null;
         AddressDTO addressDTO = null;

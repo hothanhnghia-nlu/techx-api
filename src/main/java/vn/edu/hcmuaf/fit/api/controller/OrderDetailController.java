@@ -33,12 +33,6 @@ public class OrderDetailController {
         return new ResponseEntity<>(orderDetailService.getOrderDetailByOrder(orderId), HttpStatus.OK);
     }
 
-    // Get OrderDetail by status
-    @GetMapping("/by-status")
-    public ResponseEntity<OrderDetailDTO> getOrderDetailByStatus(@RequestParam("status") int status) {
-        return new ResponseEntity<>(orderDetailService.getOrderDetailByStatus(status), HttpStatus.OK);
-    }
-
     // Get OrderDetail by id
     @GetMapping("{id}")
     public ResponseEntity<OrderDetailDTO> getOrderDetailById(@PathVariable ("id") int id) {
