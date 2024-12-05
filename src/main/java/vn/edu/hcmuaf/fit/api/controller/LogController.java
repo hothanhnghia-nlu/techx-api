@@ -23,7 +23,7 @@ public class LogController {
     // Create a new Log
     @PostMapping()
     public ResponseEntity<Log> createLog(@RequestParam int userId,
-                                         @RequestBody LogDTO log) {
+                                         @ModelAttribute LogDTO log) {
         return new ResponseEntity<>(logService.saveLog(userId, log), HttpStatus.CREATED);
     }
 

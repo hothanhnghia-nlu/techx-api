@@ -54,6 +54,11 @@ public class OrderServiceImpl implements OrderService {
             Product product = productRepository.findById(orderDetailDTO.getProduct().getId()).orElseThrow(() ->
                     new ResourceNotFoundException("Product", "Id", orderDetailDTO.getProduct().getId()));
 
+            // Check quantity in warehouse
+            if (product.getQuantity() < orderDetailDTO.getQuantity()) {
+                throw new IllegalArgumentException("Not enough stock for product ID: " + product.getId());
+            }
+
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setProduct(product);
             orderDetail.setQuantity(orderDetailDTO.getQuantity());
@@ -61,6 +66,10 @@ public class OrderServiceImpl implements OrderService {
             orderDetail.setOrder(order);
 
             order.getOrderDetails().add(orderDetail);
+
+            // Minus quantity after checkout
+            product.setQuantity(product.getQuantity() - orderDetailDTO.getQuantity());
+            productRepository.save(product);
         }
 
         return orderRepository.save(order);
