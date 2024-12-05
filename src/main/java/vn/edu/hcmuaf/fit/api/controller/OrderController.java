@@ -24,7 +24,7 @@ public class OrderController {
     // Create a new Order
     @PostMapping()
     public ResponseEntity<Order> createOrder(@RequestParam int addressId,
-                                             @RequestBody OrderDTO order) {
+                                             @ModelAttribute OrderDTO order) {
         return new ResponseEntity<>(orderService.saveOrder(addressId, order), HttpStatus.CREATED);
     }
 

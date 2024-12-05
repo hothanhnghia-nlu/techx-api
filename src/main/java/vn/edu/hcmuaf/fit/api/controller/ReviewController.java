@@ -23,7 +23,7 @@ public class ReviewController {
     // Create a new Review
     @PostMapping()
     public ResponseEntity<Review> createReview(@RequestParam int productId,
-                                               @RequestBody ReviewDTO review) {
+                                               @ModelAttribute ReviewDTO review) {
         return new ResponseEntity<>(reviewService.saveReview(productId, review), HttpStatus.CREATED);
     }
 
