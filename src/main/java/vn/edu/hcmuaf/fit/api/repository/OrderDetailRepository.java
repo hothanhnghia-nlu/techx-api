@@ -7,5 +7,4 @@ import vn.edu.hcmuaf.fit.api.model.OrderDetail;
 @Repository
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Integer> {
     OrderDetail findByOrderId(int orderId);
-    OrderDetail findByOrderStatus(int status);
 }

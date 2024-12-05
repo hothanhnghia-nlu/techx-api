@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.api.dto.OrderDTO;
 import vn.edu.hcmuaf.fit.api.dto.OrderDTO;
+import vn.edu.hcmuaf.fit.api.dto.OrderDetailDTO;
 import vn.edu.hcmuaf.fit.api.model.Order;
 import vn.edu.hcmuaf.fit.api.service.OrderService;
 
@@ -38,6 +39,12 @@ public class OrderController {
     @GetMapping(path = "/getOrdersByUser")
     public ResponseEntity<List<OrderDTO>> getOrdersByUser() {
         return new ResponseEntity<>(orderService.getOrderByUser(), HttpStatus.OK);
+    }
+
+    // Get Order by status
+    @GetMapping("/by-status")
+    public ResponseEntity<List<OrderDTO>> getOrderByStatus(@RequestParam("status") int status) {
+        return new ResponseEntity<>(orderService.getOrderByStatus(status), HttpStatus.OK);
     }
 
     // Get Order by id
