@@ -3,6 +3,7 @@ package vn.edu.hcmuaf.fit.api.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.edu.hcmuaf.fit.api.dto.*;
 import vn.edu.hcmuaf.fit.api.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.api.model.*;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class CartServiceImpl implements CartService {
     @Autowired
     private CartRepository cartRepository;
@@ -53,7 +55,6 @@ public class CartServiceImpl implements CartService {
     @Override
     public List<CartDTO> getAllCarts() {
         List<Cart> carts = cartRepository.findAll();
-
         return carts.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
@@ -67,12 +68,9 @@ public class CartServiceImpl implements CartService {
     private CartDTO convertToDTO(Cart cart) {
         UserDTO userDTO = null;
         ProductDTO productDTO = null;
-        ImageDTO imageDTO;
-        User user = cart.getUser();
-        Product product = cart.getProduct();
-        List<ImageDTO> imageDTOList = new ArrayList<>();
 
-        if (user != null) {
+        if (cart.getUser() != null) {
+            User user = cart.getUser();
             userDTO = new UserDTO(
                     user.getId(),
                     user.getFullName(),
@@ -81,17 +79,16 @@ public class CartServiceImpl implements CartService {
             );
         }
 
-        if (product != null) {
-            if (product.getImages() != null) {
-                for (Image image : product.getImages()) {
-                    imageDTO = new ImageDTO(
+        if (cart.getProduct() != null) {
+            Product product = cart.getProduct();
+            List<ImageDTO> imageDTOList = product.getImages().stream()
+                    .map(image -> new ImageDTO(
                             image.getId(),
                             image.getName(),
                             image.getUrl()
-                    );
-                    imageDTOList.add(imageDTO);
-                }
-            }
+                    ))
+                    .collect(Collectors.toList());
+
             productDTO = new ProductDTO(
                     product.getId(),
                     product.getName(),
@@ -99,20 +96,20 @@ public class CartServiceImpl implements CartService {
                     product.getNewPrice(),
                     product.getColor(),
                     product.getRam(),
-                    product.getStorage()
+                    product.getStorage(),
+                    imageDTOList
             );
         }
 
-        CartDTO cartDTO = new CartDTO();
-        cartDTO.setId(cart.getId());
-        cartDTO.setUser(userDTO);
-        cartDTO.setProduct(productDTO);
-        cartDTO.setQuantity(cart.getQuantity());
-        cartDTO.setPrice(cart.getPrice());
-        cartDTO.setStatus(cart.getStatus());
-        cartDTO.setOrderDate(cart.getOrderDate());
-
-        return cartDTO;
+        return new CartDTO(
+                cart.getId(),
+                userDTO,
+                productDTO,
+                cart.getQuantity(),
+                cart.getPrice(),
+                cart.getStatus(),
+                cart.getOrderDate()
+        );
     }
 
     @Override

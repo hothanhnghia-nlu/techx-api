@@ -49,6 +49,17 @@ public class ProductDTO {
         this.storage = storage;
     }
 
+    public ProductDTO(Integer id, String name, double originalPrice, double newPrice, String color, String ram, String storage, List<ImageDTO> images) {
+        this.id = id;
+        this.name = name;
+        this.originalPrice = originalPrice;
+        this.newPrice = newPrice;
+        this.color = color;
+        this.ram = ram;
+        this.storage = storage;
+        this.images = images;
+    }
+
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public double getOriginalPrice() {
         return originalPrice != 0 ? originalPrice : 0;
