@@ -15,4 +15,17 @@ public class CartDTO {
     private double price;
     private byte status;
     private LocalDateTime orderDate;
+
+    public CartDTO() {
+    }
+
+    public CartDTO(Integer id, UserDTO user, ProductDTO product, int quantity, double price, byte status, LocalDateTime orderDate) {
+        this.id = id;
+        this.user = user;
+        this.product = product;
+        this.quantity = quantity;
+        this.price = price;
+        this.status = status;
+        this.orderDate = orderDate;
+    }
 }
