@@ -1,13 +1,11 @@
 package vn.edu.hcmuaf.fit.api.controller;
 
-import com.mysql.cj.x.protobuf.MysqlxDatatypes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hcmuaf.fit.api.dto.UserDTO;
 import vn.edu.hcmuaf.fit.api.model.User;
 import vn.edu.hcmuaf.fit.api.service.UserService;
@@ -28,8 +26,8 @@ public class UserController {
     // Create a new User
     @Operation(summary = "Create a new user", description = "Create a new user with form data")
     @PostMapping(consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
-    public ResponseEntity<User> createUser(@ModelAttribute UserDTO User) {
-        return new ResponseEntity<>(userService.saveUser(User), HttpStatus.CREATED);
+    public ResponseEntity<User> createUser(@ModelAttribute UserDTO user) {
+        return new ResponseEntity<>(userService.saveUser(user), HttpStatus.CREATED);
     }
 
     // Get all User
@@ -46,10 +44,10 @@ public class UserController {
     }
 
     // Update User by id
-    @PutMapping("{id}")
+    @PutMapping(value = "{id}", consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
     public ResponseEntity<User> updateUserById(@PathVariable("id") int id,
-                                               @RequestBody UserDTO UserDTO) {
-        return new ResponseEntity<>(userService.updateUserByID(id, UserDTO), HttpStatus.OK);
+                                               @ModelAttribute UserDTO userDTO) {
+        return new ResponseEntity<>(userService.updateUserByID(id, userDTO), HttpStatus.OK);
     }
 
     // Delete User by id

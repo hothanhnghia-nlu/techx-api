@@ -1,5 +1,6 @@
 package vn.edu.hcmuaf.fit.api.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/addresses")
+@Tag(name = "Address Controller")
 public class AddressController {
     @Autowired
     private AddressService addressService;
@@ -47,7 +49,7 @@ public class AddressController {
     // Update Address by id
     @PutMapping("{id}")
     public ResponseEntity<Address> updateAddressById(@PathVariable ("id") int id,
-                                                       @RequestBody AddressDTO AddressDTO) {
+                                                       @ModelAttribute AddressDTO AddressDTO) {
         return new ResponseEntity<>(addressService.updateAddressByID(id, AddressDTO), HttpStatus.OK);
     }
 
