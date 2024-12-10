@@ -9,6 +9,7 @@ import vn.edu.hcmuaf.fit.api.dto.UserDTO;
 import vn.edu.hcmuaf.fit.api.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.api.model.User;
 import vn.edu.hcmuaf.fit.api.repository.UserRepository;
+import vn.edu.hcmuaf.fit.api.service.AuthenticationService;
 import vn.edu.hcmuaf.fit.api.service.UserService;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private AuthenticationService authenticationService;
 
     @Override
     public User saveUser(UserDTO userDTO) {
@@ -62,6 +65,13 @@ public class UserServiceImpl implements UserService {
     public User getUserByID(Integer id) {
         return userRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("User", "Id", id));
+    }
+
+    @Override
+    public User getUserInfo() {
+        int userId = authenticationService.getCurrentUserId();
+        return userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", userId));
     }
 
     @Override

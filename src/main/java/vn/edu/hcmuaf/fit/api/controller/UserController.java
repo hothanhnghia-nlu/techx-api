@@ -43,6 +43,12 @@ public class UserController {
         return new ResponseEntity<>(userService.getUserByID(id), HttpStatus.OK);
     }
 
+    // Get User by id
+    @GetMapping("/user-info")
+    public ResponseEntity<User> getUserInformation() {
+        return new ResponseEntity<>(userService.getUserInfo(), HttpStatus.OK);
+    }
+
     // Update User by id
     @PutMapping(value = "{id}", consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
     public ResponseEntity<User> updateUserById(@PathVariable("id") int id,
