@@ -56,6 +56,9 @@ public class Product {
     @Column(name = "battery", columnDefinition = "TEXT")
     private String battery;
 
+    @Column(name = "produced_year")
+    private int producedYear;
+
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 

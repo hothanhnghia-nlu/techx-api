@@ -25,6 +25,7 @@ public class ProductDTO {
     private String ram;
     private String storage;
     private String battery;
+    private int producedYear;
     private String description;
     private byte status;
     private LocalDateTime createdAt;

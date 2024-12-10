@@ -1,13 +1,12 @@
 package vn.edu.hcmuaf.fit.api.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hcmuaf.fit.api.dto.ProviderDTO;
-import vn.edu.hcmuaf.fit.api.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.api.model.Provider;
 import vn.edu.hcmuaf.fit.api.service.ProviderService;
 
@@ -16,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/providers")
+@Tag(name = "Provider Controller")
 public class ProviderController {
     @Autowired
     private ProviderService providerService;

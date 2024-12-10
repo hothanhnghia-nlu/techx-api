@@ -103,6 +103,24 @@ public class ProductServiceImpl implements ProductService {
         return products.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    @Override
+    public List<ProductDTO> getNewProducts() {
+        List<Product> newProducts = productRepository.findAll().stream()
+                .filter(p -> p.getProducedYear() == LocalDateTime.now().getYear())
+                .toList();
+
+        return newProducts.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductDTO> getPromotionProducts() {
+        List<Product> newProducts = productRepository.findAll().stream()
+                .filter(p -> p.getNewPrice() > 0 && p.getNewPrice() != p.getOriginalPrice())
+                .toList();
+
+        return newProducts.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
     private ProductDTO convertToDTO(Product product) {
         ProviderDTO providerDTO = null;
         ImageDTO imageDTO;
@@ -142,6 +160,7 @@ public class ProductServiceImpl implements ProductService {
         productDTO.setRam(product.getRam());
         productDTO.setStorage(product.getStorage());
         productDTO.setBattery(product.getBattery());
+        productDTO.setProducedYear(product.getProducedYear());
         productDTO.setDescription(product.getDescription());
         productDTO.setStatus((product.getStatus()));
         productDTO.setCreatedAt(product.getCreatedAt());
@@ -213,6 +232,7 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setRam(productDTO.getRam() != null ? productDTO.getRam() : existingProduct.getRam());
         existingProduct.setStorage(productDTO.getStorage() != null ? productDTO.getStorage() : existingProduct.getStorage());
         existingProduct.setBattery(productDTO.getBattery() != null ? productDTO.getBattery() : existingProduct.getBattery());
+        existingProduct.setProducedYear(productDTO.getProducedYear() != 0 ? productDTO.getProducedYear() : existingProduct.getProducedYear());
         existingProduct.setDescription(productDTO.getDescription() != null ? productDTO.getDescription() : existingProduct.getDescription());
         existingProduct.setStatus(productDTO.getStatus() != 0 ? productDTO.getStatus() : existingProduct.getStatus());
         existingProduct.setUpdatedAt(LocalDateTime.now());
