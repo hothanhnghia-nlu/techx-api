@@ -1,7 +1,9 @@
 package vn.edu.hcmuaf.fit.api.dto;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -27,4 +29,5 @@ public class UserDTO {
         this.phoneNumber = phoneNumber;
         this.email = email;
     }
+
 }
