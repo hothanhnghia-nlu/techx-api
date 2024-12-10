@@ -1,16 +1,12 @@
 package vn.edu.hcmuaf.fit.api.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vn.edu.hcmuaf.fit.api.dto.ProductDTO;
-import vn.edu.hcmuaf.fit.api.dto.ProviderDTO;
-import vn.edu.hcmuaf.fit.api.dto.ReviewDTO;
 import vn.edu.hcmuaf.fit.api.model.Product;
-import vn.edu.hcmuaf.fit.api.model.Provider;
 import vn.edu.hcmuaf.fit.api.service.ProductService;
 
 import java.io.IOException;
@@ -39,6 +35,18 @@ public class ProductController {
     @GetMapping
     public List<ProductDTO> getAllProducts() {
         return productService.getProducts();
+    }
+
+    // Get new Products
+    @GetMapping("/new-product")
+    public List<ProductDTO> getAllNewProducts() {
+        return productService.getNewProducts();
+    }
+
+    // Get promotion Product
+    @GetMapping("/promotion-product")
+    public List<ProductDTO> getAllPromotionProducts() {
+        return productService.getPromotionProducts();
     }
 
     // Get all Product by Provider
