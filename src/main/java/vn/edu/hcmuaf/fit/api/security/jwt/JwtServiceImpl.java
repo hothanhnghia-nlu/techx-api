@@ -65,7 +65,7 @@ public class JwtServiceImpl implements JwtService {
                 .claims(extractClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date())
-                .issuer(new Date().toString())
+                .issuer("TechX")
                 .expiration(calculateExpirationDate())
                 .signWith(getSecretKey())
                 .compact();
@@ -73,7 +73,9 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", userDetails.getAuthorities().iterator().next().getAuthority()); // Thêm vai trò vào claims
+        return generateToken(claims, userDetails);
     }
 
     private Date calculateExpirationDate() {
@@ -86,6 +88,7 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public <T> T extractClaims(String token, Function<Claims, T> claimResolver) {
         final Claims claims = extractAllClaims(token);
+
         return claimResolver.apply(claims);
     }
 
