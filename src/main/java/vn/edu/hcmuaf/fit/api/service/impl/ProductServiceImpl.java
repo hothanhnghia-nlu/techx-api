@@ -114,7 +114,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDTO> getPromotionProducts() {
-        List<Product> newProducts = productRepository.findAll().stream()
+        List<Product> newProducts = productRepository.findAll();
+        Collections.reverse(newProducts);
+        newProducts = newProducts.stream()
                 .filter(p -> p.getNewPrice() > 0 && p.getNewPrice() != p.getOriginalPrice())
                 .toList();
 
