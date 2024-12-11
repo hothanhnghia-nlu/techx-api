@@ -37,6 +37,13 @@ public class UserController {
         return userService.getUsers();
     }
 
+    // Get all User by user role
+    @GetMapping("/by-role")
+    @Operation(summary = "Get all User by user role", description = ".")
+    public List<UserDTO> getUsersByUserRole() {
+        return userService.getUserByRoleUser();
+    }
+
     // Get User by id
     @GetMapping("{id}")
     public ResponseEntity<User> getUserById(@PathVariable("id") int id) {

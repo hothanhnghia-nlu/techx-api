@@ -42,7 +42,9 @@ public class StatisticalServiceImpl implements StatisticalService {
     @Override
     public double totalRevenue() {
         double total = 0;
-        List<Order> orders = orderRepository.findAll();
+        List<Order> orders = orderRepository.findAll().stream()
+                .filter(o -> o.getOrderDate().getYear() == LocalDateTime.now().getYear())
+                .toList();
         for (Order o : orders) {
             total += o.getTotal();
         }
