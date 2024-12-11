@@ -47,6 +47,15 @@ public class UserServiceImpl implements UserService {
         return users.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    @Override
+    public List<UserDTO> getUserByRoleUser() {
+        List<User> users = userRepository.findAll().stream()
+                .filter(u -> u.getRole() != 2)
+                .toList();
+
+        return users.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
     private UserDTO convertToDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
