@@ -32,13 +32,13 @@ public class OrderController {
     }
 
     // Get all Order
-    @GetMapping(path = "/getAllOrders")
+    @GetMapping(path = "/all-orders")
     public List<OrderDTO> getAllOrders() {
         return orderService.getAllOrders();
     }
 
     // Get Order by user
-    @GetMapping(path = "/getOrdersByUser")
+    @GetMapping(path = "/by-user")
     public ResponseEntity<List<OrderDTO>> getOrdersByUser() {
         return new ResponseEntity<>(orderService.getOrderByUser(), HttpStatus.OK);
     }

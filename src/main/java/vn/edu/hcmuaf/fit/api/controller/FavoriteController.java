@@ -30,13 +30,13 @@ public class FavoriteController {
     }
 
     // Get all Favorite
-    @GetMapping(path = "/getAllFavorites")
+    @GetMapping(path = "/all-favorites")
     public List<FavoriteDTO> getAllFavorites() {
         return favoriteService.getAllFavorites();
     }
 
     // Get Favorite by user
-    @GetMapping(path = "/getFavoritesByUser")
+    @GetMapping(path = "/by-user")
     public ResponseEntity<List<FavoriteDTO>> getFavoritesByUser() {
         return new ResponseEntity<>(favoriteService.getFavoriteByUser(), HttpStatus.OK);
     }

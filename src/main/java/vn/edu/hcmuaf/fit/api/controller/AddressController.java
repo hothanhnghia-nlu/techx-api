@@ -29,13 +29,13 @@ public class AddressController {
     }
 
     // Get all Address
-    @GetMapping(path = "/getAllAddresses")
+    @GetMapping(path = "/all-addresses")
     public List<AddressDTO> getAllAddresses() {
         return addressService.getAllAddresses();
     }
 
     // Get Address by user
-    @GetMapping(path = "/getAddressesByUser")
+    @GetMapping(path = "/by-user")
     public ResponseEntity<List<AddressDTO>> getAddressesByUser() {
         return new ResponseEntity<>(addressService.getAddressesByUser(), HttpStatus.OK);
     }

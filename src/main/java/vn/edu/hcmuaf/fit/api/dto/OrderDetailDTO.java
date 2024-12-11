@@ -11,4 +11,14 @@ public class OrderDetailDTO {
     private ProductDTO product;
     private int quantity;
     private double price;
+
+    public OrderDetailDTO() {
+    }
+
+    public OrderDetailDTO(Integer id, ProductDTO product, int quantity, double price) {
+        this.id = id;
+        this.product = product;
+        this.quantity = quantity;
+        this.price = price;
+    }
 }

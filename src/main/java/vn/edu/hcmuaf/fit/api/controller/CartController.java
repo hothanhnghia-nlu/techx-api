@@ -29,13 +29,13 @@ public class CartController {
     }
 
     // Get all Cart
-    @GetMapping(path = "/getAllCarts")
+    @GetMapping(path = "/all-carts")
     public List<CartDTO> getAllCarts() {
         return cartService.getAllCarts();
     }
 
     // Get Cart by user
-    @GetMapping(path = "/getCartsByUser")
+    @GetMapping(path = "/by-user")
     public ResponseEntity<List<CartDTO>> getCartsByUser() {
         return new ResponseEntity<>(cartService.getCartByUser(), HttpStatus.OK);
     }
