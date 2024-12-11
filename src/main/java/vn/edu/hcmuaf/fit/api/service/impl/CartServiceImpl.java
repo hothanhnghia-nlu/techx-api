@@ -15,6 +15,7 @@ import vn.edu.hcmuaf.fit.api.service.CartService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +56,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public List<CartDTO> getAllCarts() {
         List<Cart> carts = cartRepository.findAll();
+        Collections.reverse(carts);
         return carts.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
@@ -62,6 +64,7 @@ public class CartServiceImpl implements CartService {
     public List<CartDTO> getCartByUser() {
         int id = authenticationService.getCurrentUserId();
         List<Cart> carts = cartRepository.findByUserId(id);
+        Collections.reverse(carts);
         return carts.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 

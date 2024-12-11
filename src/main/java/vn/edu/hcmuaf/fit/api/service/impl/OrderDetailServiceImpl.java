@@ -26,7 +26,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
     private OrderDetailDTO convertToDTO(OrderDetail orderDetail) {
-        OrderDTO orderDTO = null;
+        OrderDTO orderDTO;
         UserDTO userDTO = null;
         AddressDTO addressDTO = null;
         ProductDTO productDTO = null;

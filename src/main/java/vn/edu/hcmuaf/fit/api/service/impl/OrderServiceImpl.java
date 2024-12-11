@@ -12,6 +12,7 @@ import vn.edu.hcmuaf.fit.api.service.OrderService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,7 +79,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderDTO> getAllOrders() {
         List<Order> orders = orderRepository.findAll();
-
+        Collections.reverse(orders);
         return orders.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
@@ -86,12 +87,14 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderDTO> getOrderByUser() {
         int id = authenticationService.getCurrentUserId();
         List<Order> orders = orderRepository.findByUserId(id);
+        Collections.reverse(orders);
         return orders.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<OrderDTO> getOrderByStatus(int status) {
         List<Order> orders = orderRepository.findByStatus(status);
+        Collections.reverse(orders);
         return orders.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
@@ -101,6 +104,7 @@ public class OrderServiceImpl implements OrderService {
         User user = order.getUser();
         Address address = order.getAddress();
 
+        // Convert User and Address to DTO
         if (user != null) {
             userDTO = new UserDTO(
                     user.getId(),
@@ -120,6 +124,18 @@ public class OrderServiceImpl implements OrderService {
             );
         }
 
+        // Map OrderDetails to OrderDetailDTO
+        List<OrderDetailDTO> orderDetailDTOs = order.getOrderDetails().stream().map(detail -> {
+            ProductDTO productDTO = convertToProductDTO(detail.getProduct());
+            return new OrderDetailDTO(
+                    detail.getId(),
+                    productDTO,
+                    detail.getQuantity(),
+                    detail.getPrice()
+            );
+        }).collect(Collectors.toList());
+
+        // Map Order to OrderDTO
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setId(order.getId());
         orderDTO.setUser(userDTO);
@@ -130,8 +146,29 @@ public class OrderServiceImpl implements OrderService {
         orderDTO.setOrderDate(order.getOrderDate());
         orderDTO.setPaymentDate(order.getPaymentDate());
         orderDTO.setStatus(order.getStatus());
+        orderDTO.setOrderDetails(orderDetailDTOs);
 
         return orderDTO;
+    }
+
+    private ProductDTO convertToProductDTO(Product product) {
+        List<ImageDTO> imageDTOs = product.getImages().stream().map(image -> new ImageDTO(
+                image.getId(),
+                image.getName(),
+                image.getUrl()
+        )).collect(Collectors.toList());
+
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setId(product.getId());
+        productDTO.setName(product.getName());
+        productDTO.setOriginalPrice(product.getOriginalPrice());
+        productDTO.setNewPrice(product.getNewPrice());
+        productDTO.setColor(product.getColor());
+        productDTO.setRam(product.getRam());
+        productDTO.setStorage(product.getStorage());
+        productDTO.setImages(imageDTOs);
+
+        return productDTO;
     }
 
     @Override

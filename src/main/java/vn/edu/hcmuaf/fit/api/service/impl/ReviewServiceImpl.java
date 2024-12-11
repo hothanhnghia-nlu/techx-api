@@ -17,6 +17,7 @@ import vn.edu.hcmuaf.fit.api.service.ReviewService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,12 +57,14 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public List<ReviewDTO> getReviews() {
         List<Review> reviews = reviewRepository.findAll();
+        Collections.reverse(reviews);
         return reviews.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<ReviewDTO> getReviewsByProduct(int productId) {
         List<Review> reviews = reviewRepository.findByProductId(productId);
+        Collections.reverse(reviews);
         return reviews.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
