@@ -58,7 +58,7 @@ public class OrderController {
     // Update Order by id
     @PutMapping("{id}")
     public ResponseEntity<Order> updateOrderById(@PathVariable ("id") int id,
-                                                       @RequestBody OrderDTO orderDTO) {
+                                                 @ModelAttribute OrderDTO orderDTO) {
         return new ResponseEntity<>(orderService.updateOrderByID(id, orderDTO), HttpStatus.OK);
     }
 
