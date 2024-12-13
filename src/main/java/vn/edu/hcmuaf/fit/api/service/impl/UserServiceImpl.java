@@ -89,9 +89,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUserByID(Integer id, UserDTO userDTO) {
-        User existingUser = userRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("User", "Id", id));
+    public User updateUser(UserDTO userDTO) {
+        int userId = authenticationService.getCurrentUserId();
+        User existingUser = userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", userId));
 
         existingUser.setFullName(userDTO.getFullName() != null ? userDTO.getFullName() : existingUser.getFullName());
         existingUser.setPhoneNumber(userDTO.getPhoneNumber() != null ? userDTO.getPhoneNumber() : existingUser.getPhoneNumber());
@@ -104,10 +105,46 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updatePassword(UserDTO userDTO) {
+        int userId = authenticationService.getCurrentUserId();
+        User existingUser = userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", userId));
+
+        String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+
+        existingUser.setPassword(userDTO.getPassword() != null ? encodedPassword : existingUser.getPassword());
+        existingUser.setUpdatedAt(LocalDateTime.now());
+
+        userRepository.save(existingUser);
+    }
+
+    @Override
+    public void updatePasswordByEmail(String email, UserDTO userDTO) {
+        User existingUser = userRepository.findByEmail(email).orElseThrow(() ->
+                new ResourceNotFoundException("User", "email", email));
+
+        String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+
+        existingUser.setPassword(userDTO.getPassword() != null ? encodedPassword : existingUser.getPassword());
+        existingUser.setUpdatedAt(LocalDateTime.now());
+
+        userRepository.save(existingUser);
+    }
+
+    @Override
     public void deleteUserByID(Integer id) {
         userRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("User", "Id", id));
 
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public void deleteAcc() {
+        int userId = authenticationService.getCurrentUserId();
+        userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("User", "Id", userId));
+
+        userRepository.deleteById(userId);
     }
 }
