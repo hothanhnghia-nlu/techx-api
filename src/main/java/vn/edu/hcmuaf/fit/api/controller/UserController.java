@@ -56,11 +56,28 @@ public class UserController {
         return new ResponseEntity<>(userService.getUserInfo(), HttpStatus.OK);
     }
 
-    // Update User by id
-    @PutMapping(value = "{id}", consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
-    public ResponseEntity<User> updateUserById(@PathVariable("id") int id,
-                                               @ModelAttribute UserDTO userDTO) {
-        return new ResponseEntity<>(userService.updateUserByID(id, userDTO), HttpStatus.OK);
+    // Update User authed
+    @PutMapping(value = "/update-user",
+                consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
+    public ResponseEntity<User> updateUserAuthed(@ModelAttribute UserDTO userDTO) {
+        return new ResponseEntity<>(userService.updateUser(userDTO), HttpStatus.OK);
+    }
+
+    // Changed password
+    @PutMapping(value = "/change-password",
+                consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
+    public ResponseEntity<String> changePassword(@ModelAttribute UserDTO userDTO) {
+        userService.updatePassword(userDTO);
+        return new ResponseEntity<>("User is changed password successfully!", HttpStatus.OK);
+    }
+
+    // Changed password
+    @PutMapping(value = "/change-password/by-email",
+                consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
+    public ResponseEntity<String> changePassword(@RequestParam String email,
+                                                 @ModelAttribute UserDTO userDTO) {
+        userService.updatePasswordByEmail(email, userDTO);
+        return new ResponseEntity<>("User is changed password successfully!", HttpStatus.OK);
     }
 
     // Delete User by id
@@ -68,6 +85,13 @@ public class UserController {
     public ResponseEntity<String> deleteUserById(@PathVariable("id") int id) {
         userService.deleteUserByID(id);
         return new ResponseEntity<>("User " + id + " is deleted successfully!", HttpStatus.OK);
+    }
+
+    // Delete User account
+    @DeleteMapping("/delete-account")
+    public ResponseEntity<String> deleteAccount() {
+        userService.deleteAcc();
+        return new ResponseEntity<>("Account is deleted successfully!", HttpStatus.OK);
     }
 
 }

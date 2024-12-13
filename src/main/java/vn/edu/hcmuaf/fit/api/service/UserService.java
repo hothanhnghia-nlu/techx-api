@@ -12,7 +12,10 @@ public interface UserService {
     User getUserByID(Integer id);
     User getUserInfo();
     User getUserByEmail(String email);
-    User updateUserByID(Integer id, UserDTO userDTO);
+    User updateUser(UserDTO userDTO);
+    void updatePassword(UserDTO userDTO);
+    void updatePasswordByEmail(String email, UserDTO userDTO);
     void deleteUserByID(Integer id);
+    void deleteAcc();
 
 }
