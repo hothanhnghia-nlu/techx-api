@@ -71,7 +71,7 @@ public class UserController {
         return new ResponseEntity<>("User is changed password successfully!", HttpStatus.OK);
     }
 
-    // Changed password
+    // Changed password by email
     @PutMapping(value = "/change-password/by-email",
                 consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
     public ResponseEntity<String> changePassword(@RequestParam String email,
