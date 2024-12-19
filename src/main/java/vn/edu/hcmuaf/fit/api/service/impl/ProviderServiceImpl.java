@@ -124,13 +124,11 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Override
     public void deleteProviderByID(Integer id) {
-        providerRepository.findById(id).orElseThrow(() ->
+        Provider existingProvider = providerRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Provider", "Id", id));
 
-        imageRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Image", "Id", id));
+        imageRepository.delete(existingProvider.getImage());
 
         providerRepository.deleteById(id);
-        imageRepository.deleteById(id);
     }
 }
