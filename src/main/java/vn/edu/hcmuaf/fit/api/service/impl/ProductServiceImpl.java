@@ -83,6 +83,7 @@ public class ProductServiceImpl implements ProductService {
         product.setRam(productDTO.getRam());
         product.setStorage(productDTO.getStorage());
         product.setBattery(productDTO.getBattery());
+        product.setProducedYear(productDTO.getProducedYear());
         product.setDescription(productDTO.getDescription());
         product.setStatus((byte) 1);
         product.setCreatedAt(LocalDateTime.now());

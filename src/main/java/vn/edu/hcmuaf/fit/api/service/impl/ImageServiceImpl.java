@@ -62,10 +62,10 @@ public class ImageServiceImpl implements ImageService {
 
     // Save Product Image
     public Image saveProductImage(MultipartFile file, Product product) throws IOException {
-        String providerName = product.getName().replaceAll(" ", "_");
+        String productName = product.getName().replaceAll(" ", "_");
         String fileExtension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
 
-        String fileName = providerName + fileExtension;
+        String fileName = productName + fileExtension;
 
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
                 ObjectUtils.asMap("public_id", "products/" + fileName));
@@ -73,7 +73,7 @@ public class ImageServiceImpl implements ImageService {
         String url = (String) uploadResult.get("url");
 
         Image image = new Image();
-        image.setName(providerName);
+        image.setName(productName);
         image.setUrl(url);
         image.setProduct(product);
 
