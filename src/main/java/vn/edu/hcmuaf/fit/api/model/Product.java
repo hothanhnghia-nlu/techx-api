@@ -19,7 +19,7 @@ public class Product {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToOne
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinColumn(name = "provider_id")
     private Provider provider;
 

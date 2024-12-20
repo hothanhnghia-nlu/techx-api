@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setEmail(userDTO.getEmail());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        user.setRole(0);
+        user.setRole(1); // Default ROLE USER
         user.setStatus((byte) 1);
         user.setCreatedAt(LocalDateTime.now());
 
