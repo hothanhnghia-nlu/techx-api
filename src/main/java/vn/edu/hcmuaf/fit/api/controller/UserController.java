@@ -23,13 +23,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    // Create a new User
-    @Operation(summary = "Create a new user", description = "Create a new user with form data")
-    @PostMapping(consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
-    public ResponseEntity<User> createUser(@ModelAttribute UserDTO user) {
-        return new ResponseEntity<>(userService.saveUser(user), HttpStatus.CREATED);
-    }
-
     // Get all User
     @GetMapping
     @Operation(summary = "Get all User", description = ".")

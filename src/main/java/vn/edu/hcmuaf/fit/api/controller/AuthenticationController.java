@@ -8,9 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.edu.hcmuaf.fit.api.dto.UserDTO;
 import vn.edu.hcmuaf.fit.api.dto.auth.SignInRequest;
 import vn.edu.hcmuaf.fit.api.exception.ApiRequestException;
+import vn.edu.hcmuaf.fit.api.model.User;
 import vn.edu.hcmuaf.fit.api.service.AuthenticationService;
+import vn.edu.hcmuaf.fit.api.service.UserService;
 
 @Slf4j
 @RestController
@@ -20,6 +23,7 @@ import vn.edu.hcmuaf.fit.api.service.AuthenticationService;
 @Tag(name = "Authentication Controller")
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
+    private final UserService userService;
 
     @Operation(summary = "Sign In", description = "Authenticate and sign in a user.")
     @PostMapping(path = "/sign-in")
@@ -36,6 +40,12 @@ public class AuthenticationController {
             log.error("An error occurred during login for user: {}", request.getEmail(), e);
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Operation(summary = "Sign Up", description = "Create a new account")
+    @PostMapping(value = "/sign-up", consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
+    public ResponseEntity<User> createUser(@ModelAttribute UserDTO user) {
+        return new ResponseEntity<>(userService.saveUser(user), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Logout", description = "Log out the currently authenticated user.")
