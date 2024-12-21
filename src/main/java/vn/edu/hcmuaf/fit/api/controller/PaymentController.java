@@ -1,38 +1,29 @@
 package vn.edu.hcmuaf.fit.api.controller;
 
-import com.stripe.Stripe;
 import com.stripe.exception.CardException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
-import com.stripe.model.PaymentMethod;
-import com.stripe.param.PaymentIntentCreateParams;
-import com.stripe.param.PaymentIntentCreateParams.AutomaticPaymentMethods;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vn.edu.hcmuaf.fit.api.dto.payment.request.PaymentConfirmRequest;
 import vn.edu.hcmuaf.fit.api.dto.payment.request.PaymentRequest;
-import vn.edu.hcmuaf.fit.api.dto.payment.request.PaymentResponseDTO;
+import vn.edu.hcmuaf.fit.api.dto.payment.reponse.PaymentResponseDTO;
 import vn.edu.hcmuaf.fit.api.service.PaymentService;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/payment")
+@RequestMapping("/api/v1/payment")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Payment", description = "Payment management APIs")

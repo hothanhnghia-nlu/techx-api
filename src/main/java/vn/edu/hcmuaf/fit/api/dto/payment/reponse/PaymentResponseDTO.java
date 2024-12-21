@@ -1,4 +1,4 @@
-package vn.edu.hcmuaf.fit.api.dto.payment.request;
+package vn.edu.hcmuaf.fit.api.dto.payment.reponse;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
