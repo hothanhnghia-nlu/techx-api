@@ -3,16 +3,14 @@ package vn.edu.hcmuaf.fit.api.service.impl;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
-import com.stripe.model.PaymentMethod;
+import com.stripe.param.PaymentIntentConfirmParams;
 import com.stripe.param.PaymentIntentCreateParams;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import vn.edu.hcmuaf.fit.api.dto.payment.request.PaymentRequest;
+import vn.edu.hcmuaf.fit.api.dto.payment.request.PaymentConfirmRequest;
+import vn.edu.hcmuaf.fit.api.dto.payment.request.PaymentIntentRequest;
 import vn.edu.hcmuaf.fit.api.service.PaymentService;
-
-import java.util.HashMap;
-import java.util.Map;
 
 
 @Service
@@ -22,30 +20,19 @@ public class PaymentServiceImpl implements PaymentService {
     private String stripeSecretKey;
 
     @Override
-    public PaymentIntent createCardPayment(PaymentRequest request) throws StripeException {
+    public PaymentIntent createCardPayment(PaymentIntentRequest request) throws StripeException {
         Stripe.apiKey = stripeSecretKey;
 
-        // Tạo PaymentMethod
-        Map<String, Object> cardParams = new HashMap<>();
-        cardParams.put("number", "4242424242424242");
-        cardParams.put("exp_month", 12);
-        cardParams.put("exp_year", 2024);
-        cardParams.put("cvc", "123");
-
-        Map<String, Object> paymentMethodParams = new HashMap<>();
-        paymentMethodParams.put("type", "card");
-        paymentMethodParams.put("card", cardParams);
-
-        PaymentMethod paymentMethod = PaymentMethod.create(paymentMethodParams);
+        // Giả sử bạn có một hàm để chuyển đổi từ VND sang USD
+        double exchangeRate = getExchangeRateVndToUsd(); // Lấy tỷ giá hối đoái
+        long amountInUsd = convertVndToUsd(request.getAmount(), exchangeRate);
 
         // Tạo PaymentIntent
         PaymentIntentCreateParams intentParams = PaymentIntentCreateParams.builder()
-                .setAmount((long) (request.getAmount() * 100))
+                .setAmount(amountInUsd) // Số tiền tính bằng đồng (VND)
                 .setCurrency("usd")
-                .setPaymentMethod(paymentMethod.getId())
                 .setConfirmationMethod(PaymentIntentCreateParams.ConfirmationMethod.MANUAL)
                 .setCaptureMethod(PaymentIntentCreateParams.CaptureMethod.AUTOMATIC)
-                .setConfirm(true)
                 .build();
 
         PaymentIntent paymentIntent = PaymentIntent.create(intentParams);
@@ -54,11 +41,16 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentIntent confirmPayment(String paymentIntentId) throws StripeException {
+    public PaymentIntent confirmPayment(PaymentConfirmRequest  request) throws StripeException {
         Stripe.apiKey = stripeSecretKey;
-        PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
-        PaymentIntent confirmedIntent = paymentIntent.confirm();
-        log.info("Confirmed payment intent: {}", paymentIntentId);
+        PaymentIntent paymentIntent = PaymentIntent.retrieve(request.getPaymentIntentId());
+        // Gọi confirm() để xác nhận giao dịch
+        PaymentIntentConfirmParams confirmParams = PaymentIntentConfirmParams.builder()
+                .setPaymentMethod(request.getPaymentMethodId()) // Thêm PaymentMethod nếu cần
+                .build();
+        PaymentIntent confirmedIntent = paymentIntent.confirm(confirmParams);
+
+        log.info("Confirmed payment intent: {}", confirmedIntent.getId());
         return confirmedIntent;
     }
 
@@ -69,5 +61,17 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentIntent canceledIntent = paymentIntent.cancel();
         log.info("Canceled payment intent: {}", paymentIntentId);
         return canceledIntent;
+    }
+    // Hàm chuyển đổi từ VND sang USD
+    private long convertVndToUsd(double amountVnd, double exchangeRate) {
+        // Chuyển đổi từ VND sang USD và làm tròn xuống
+        double amountUsd = amountVnd / exchangeRate;
+        return Math.round(amountUsd * 100); // Nhân với 100 để chuyển sang cents
+    }
+
+    // Hàm lấy tỷ giá hối đoái từ VND sang USD (giả sử tỷ giá cố định)
+    private double getExchangeRateVndToUsd() {
+        // Ví dụ: tỷ giá cố định 1 USD = 24,000 VND
+        return 24000.0;
     }
 }

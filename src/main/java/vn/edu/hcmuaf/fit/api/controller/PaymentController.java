@@ -15,7 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vn.edu.hcmuaf.fit.api.dto.payment.request.PaymentRequest;
+import vn.edu.hcmuaf.fit.api.dto.payment.request.PaymentConfirmRequest;
+import vn.edu.hcmuaf.fit.api.dto.payment.request.PaymentIntentRequest;
 import vn.edu.hcmuaf.fit.api.dto.payment.reponse.PaymentResponseDTO;
 import vn.edu.hcmuaf.fit.api.service.PaymentService;
 
@@ -36,7 +37,7 @@ public class PaymentController {
             description = "Creates a new payment intent using Stripe"
     )
     @PostMapping("/create-payment")
-    public ResponseEntity<Map<String, String>> createPayment(@RequestBody PaymentRequest request) {
+    public ResponseEntity<Map<String, String>> createPayment(@RequestBody PaymentIntentRequest request) {
         try {
             PaymentIntent paymentIntent = paymentService.createCardPayment(request);
 
@@ -79,13 +80,11 @@ public class PaymentController {
                     description = "Internal server error"
             )
     })
-    @PostMapping("/confirm/{paymentIntentId}")
-    public ResponseEntity<PaymentResponseDTO> confirmPayment(
-            @Parameter(description = "Payment Intent ID", required = true)
-            @PathVariable String paymentIntentId
+    @PostMapping("/confirm")
+    public ResponseEntity<PaymentResponseDTO> confirmPayment(@RequestBody PaymentConfirmRequest request
     ) {
         try {
-            PaymentIntent confirmedPayment = paymentService.confirmPayment(paymentIntentId);
+            PaymentIntent confirmedPayment = paymentService.confirmPayment(request);
             PaymentResponseDTO response = convertToDTO(confirmedPayment);
             return ResponseEntity.ok(response);
         } catch (StripeException e) {
