@@ -46,7 +46,6 @@ public class PaymentController {
             response.put("paymentIntentId", paymentIntent.getId());
             response.put("status", paymentIntent.getStatus());
 
-            log.info("Payment processed successfully for amount: {}", request.getAmount());
             return ResponseEntity.ok(response);
 
         } catch (CardException e) {
