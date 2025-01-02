@@ -6,16 +6,23 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentConfirmParams;
 import com.stripe.param.PaymentIntentCreateParams;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import vn.edu.hcmuaf.fit.api.dto.payment.reponse.PaymentResponseDTO;
 import vn.edu.hcmuaf.fit.api.dto.payment.request.PaymentConfirmRequest;
 import vn.edu.hcmuaf.fit.api.dto.payment.request.PaymentIntentRequest;
+import vn.edu.hcmuaf.fit.api.mapper.PaymentIntentMapper;
 import vn.edu.hcmuaf.fit.api.service.PaymentService;
 
 
 @Service
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
+
+    @Autowired
+    private PaymentIntentMapper paymentIntentMapper;
+
     @Value("${stripe.secret.key}")
     private String stripeSecretKey;
 
@@ -41,7 +48,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentIntent confirmPayment(PaymentConfirmRequest  request) throws StripeException {
+    public PaymentResponseDTO confirmPayment(PaymentConfirmRequest request) throws StripeException {
         Stripe.apiKey = stripeSecretKey;
         PaymentIntent paymentIntent = PaymentIntent.retrieve(request.getPaymentIntentId());
         // Gọi confirm() để xác nhận giao dịch
@@ -49,19 +56,21 @@ public class PaymentServiceImpl implements PaymentService {
                 .setPaymentMethod(request.getPaymentMethodId()) // Thêm PaymentMethod nếu cần
                 .build();
         PaymentIntent confirmedIntent = paymentIntent.confirm(confirmParams);
-
+        PaymentResponseDTO paymentResponseDTO = paymentIntentMapper.map(confirmedIntent);
         log.info("Confirmed payment intent: {}", confirmedIntent.getId());
-        return confirmedIntent;
+        return paymentResponseDTO;
     }
 
     @Override
-    public PaymentIntent cancelPayment(String paymentIntentId) throws StripeException {
+    public PaymentResponseDTO cancelPayment(String paymentIntentId) throws StripeException {
         Stripe.apiKey = stripeSecretKey;
         PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
         PaymentIntent canceledIntent = paymentIntent.cancel();
+        PaymentResponseDTO paymentResponseDTO = paymentIntentMapper.map(canceledIntent);
         log.info("Canceled payment intent: {}", paymentIntentId);
-        return canceledIntent;
+        return paymentResponseDTO;
     }
+
     // Hàm chuyển đổi từ VND sang USD
     private long convertVndToUsd(double amountVnd, double exchangeRate) {
         // Chuyển đổi từ VND sang USD và làm tròn xuống
