@@ -83,8 +83,7 @@ public class PaymentController {
     public ResponseEntity<PaymentResponseDTO> confirmPayment(@RequestBody PaymentConfirmRequest request
     ) {
         try {
-            PaymentIntent confirmedPayment = paymentService.confirmPayment(request);
-            PaymentResponseDTO response = convertToDTO(confirmedPayment);
+            PaymentResponseDTO response = paymentService.confirmPayment(request);
             return ResponseEntity.ok(response);
         } catch (StripeException e) {
             log.error("Error confirming payment: {}", e.getMessage());
@@ -114,8 +113,7 @@ public class PaymentController {
             @PathVariable String paymentIntentId
     ) {
         try {
-            PaymentIntent canceledPayment = paymentService.cancelPayment(paymentIntentId);
-            PaymentResponseDTO response = convertToDTO(canceledPayment);
+            PaymentResponseDTO response =  paymentService.cancelPayment(paymentIntentId);
             return ResponseEntity.ok(response);
         } catch (StripeException e) {
             log.error("Error canceling payment: {}", e.getMessage());
@@ -123,13 +121,4 @@ public class PaymentController {
         }
     }
 
-    private PaymentResponseDTO convertToDTO(PaymentIntent paymentIntent) {
-        return PaymentResponseDTO.builder()
-                .paymentIntentId(paymentIntent.getId())
-                .status(paymentIntent.getStatus())
-                .clientSecret(paymentIntent.getClientSecret())
-                .amount(paymentIntent.getAmount() / 100.0) // Convert from cents to dollars
-                .currency(paymentIntent.getCurrency())
-                .build();
-    }
 }
