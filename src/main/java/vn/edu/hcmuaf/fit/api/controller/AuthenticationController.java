@@ -44,8 +44,13 @@ public class AuthenticationController {
 
     @Operation(summary = "Sign Up", description = "Create a new account")
     @PostMapping(value = "/sign-up", consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
-    public ResponseEntity<User> createUser(@ModelAttribute UserDTO user) {
-        return new ResponseEntity<>(userService.saveUser(user), HttpStatus.CREATED);
+    public ResponseEntity<?> signUp(@ModelAttribute UserDTO user) {
+        try {
+            User savedUser = userService.saveUser(user);
+            return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Operation(summary = "Logout", description = "Log out the currently authenticated user.")
