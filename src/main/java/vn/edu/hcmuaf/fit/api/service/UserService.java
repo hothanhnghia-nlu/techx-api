@@ -17,5 +17,7 @@ public interface UserService {
     void updatePasswordByEmail(String email, UserDTO userDTO);
     void deleteUserByID(Integer id);
     void deleteAcc();
-
+    void sendOtpToEmail(String email);
+    boolean verifyOtp(String email, String otp);
+    void updatePasswordByEmail(String email, String newPassword);
 }

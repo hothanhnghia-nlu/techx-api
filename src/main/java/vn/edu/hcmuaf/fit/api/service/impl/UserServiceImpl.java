@@ -3,6 +3,9 @@ package vn.edu.hcmuaf.fit.api.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.edu.hcmuaf.fit.api.dto.UserDTO;
@@ -12,8 +15,11 @@ import vn.edu.hcmuaf.fit.api.repository.UserRepository;
 import vn.edu.hcmuaf.fit.api.service.AuthenticationService;
 import vn.edu.hcmuaf.fit.api.service.UserService;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -25,6 +31,12 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     @Autowired
     private AuthenticationService authenticationService;
+    @Autowired
+    private JavaMailSender mailSender;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate; // Redis để lưu OTP tạm thời
+
+    private static final int OTP_EXPIRATION_MINUTES = 2; // Thời gian sống của OTP (5 phút)
 
     @Override
     public User saveUser(UserDTO userDTO) {
@@ -146,5 +158,40 @@ public class UserServiceImpl implements UserService {
                 new ResourceNotFoundException("User", "Id", userId));
 
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    public void sendOtpToEmail(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User không tồn tại"));
+        //tao ma otp
+        String otp = String.valueOf(new Random().nextInt(999999));
+        // luu otp vao redis voi thoi gian het han la 2 phut
+        redisTemplate.opsForValue().set("OTP_" + email, otp, Duration.ofMinutes(OTP_EXPIRATION_MINUTES));
+        log.info("OTP {} được lưu vào Redis với key {}", otp, "OTP_" + email);
+        // gui email chua otp
+        SimpleMailMessage emailMessage = new SimpleMailMessage();
+        emailMessage.setTo(email);
+        emailMessage.setSubject("Mã OTP đặt lại mật khẩu");
+        emailMessage.setText("Mã OTP của bạn là: " + otp + ". Mã này sẽ hết hạn sau " + OTP_EXPIRATION_MINUTES + " phút.");
+        mailSender.send(emailMessage);
+
+    }
+
+    @Override
+    public boolean verifyOtp(String email, String otp) {
+        String storedOtp = redisTemplate.opsForValue().get("OTP_" + email);
+        log.info("OTP từ Redis: {}", storedOtp);
+        if (storedOtp == null) {
+            log.warn("OTP không tồn tại hoặc đã hết hạn cho email {}", email);
+            return false;
+        }
+        return storedOtp.trim().equals(otp.trim());
+    }
+
+    @Override
+    public void updatePasswordByEmail(String email, String newPassword) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }

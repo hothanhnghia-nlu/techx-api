@@ -7,10 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.api.dto.UserDTO;
+import vn.edu.hcmuaf.fit.api.dto.user.request.ResetPasswordRequest;
 import vn.edu.hcmuaf.fit.api.model.User;
 import vn.edu.hcmuaf.fit.api.service.UserService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/users")
@@ -51,14 +53,14 @@ public class UserController {
 
     // Update User authed
     @PutMapping(value = "/update-user",
-                consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
+            consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
     public ResponseEntity<User> updateUserAuthed(@ModelAttribute UserDTO userDTO) {
         return new ResponseEntity<>(userService.updateUser(userDTO), HttpStatus.OK);
     }
 
     // Changed password
     @PutMapping(value = "/change-password",
-                consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
+            consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
     public ResponseEntity<String> changePassword(@ModelAttribute UserDTO userDTO) {
         userService.updatePassword(userDTO);
         return new ResponseEntity<>("User is changed password successfully!", HttpStatus.OK);
@@ -66,7 +68,7 @@ public class UserController {
 
     // Changed password by email
     @PutMapping(value = "/change-password/by-email",
-                consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
+            consumes = {"multipart/form-data", "application/x-www-form-urlencoded"})
     public ResponseEntity<String> changePassword(@RequestParam String email,
                                                  @ModelAttribute UserDTO userDTO) {
         userService.updatePasswordByEmail(email, userDTO);
@@ -87,4 +89,27 @@ public class UserController {
         return new ResponseEntity<>("Account is deleted successfully!", HttpStatus.OK);
     }
 
+    @GetMapping("/fotgot-password/send-otp")
+    public ResponseEntity<String> sendOTP(@RequestParam String email) {
+        userService.sendOtpToEmail(email);
+        return new ResponseEntity<>("OTP sent successfully!", HttpStatus.OK);
+    }
+
+    @GetMapping("/forgot-password/verify-otp")
+    public ResponseEntity<String> verifyOtp(@RequestParam String email, @RequestParam String otp) {
+        boolean isValid = userService.verifyOtp(email, otp);
+        if (isValid) {
+            return new ResponseEntity<>("Mã OTP hợp lệ!", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Mã OTP không hợp lệ!", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/forgot-password/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
+        String email = request.getEmail();
+        String newPassword = request.getNewPassword();
+        userService.updatePasswordByEmail(email, newPassword);
+        return new ResponseEntity<>("Mật khẩu đã được cập nhật thành công!", HttpStatus.OK);
+    }
 }

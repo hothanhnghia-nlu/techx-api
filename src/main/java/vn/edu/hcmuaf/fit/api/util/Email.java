@@ -61,7 +61,7 @@ public class Email {
 //        System.out.println(status);
 //        test
 //        sendMailWithAttachment("tranbuituanngoc@gmail.com", "Key mã hóa","abcaabacaxaca", "abxasdacacasdasdc ác", "qưkjhcv123kjhcaushuirfkjajsdygwecjkabsch");
-        sendMail("tranbuituanngoc@gmail.com","abc test mail", "test mail");
+        sendMail("trandongads250@gmail.com","abc test mail", "test mail");
     }
 }
 
