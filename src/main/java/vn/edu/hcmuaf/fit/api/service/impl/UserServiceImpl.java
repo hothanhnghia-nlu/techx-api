@@ -40,6 +40,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveUser(UserDTO userDTO) {
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new IllegalArgumentException("Email đã tồn tại!");
+        }
+
         User user = new User();
         user.setFullName(userDTO.getFullName());
         user.setPhoneNumber(userDTO.getPhoneNumber());
