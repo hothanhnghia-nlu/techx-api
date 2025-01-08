@@ -66,10 +66,8 @@ public class FavoriteServiceImpl implements FavoriteService {
     private FavoriteDTO convertToDTO(Favorite favorite) {
         UserDTO userDTO = null;
         ProductDTO productDTO = null;
-        ImageDTO imageDTO;
         User user = favorite.getUser();
         Product product = favorite.getProduct();
-        List<ImageDTO> imageDTOList = new ArrayList<>();
 
         if (user != null) {
             userDTO = new UserDTO(
@@ -81,16 +79,14 @@ public class FavoriteServiceImpl implements FavoriteService {
         }
 
         if (product != null) {
-            if (product.getImages() != null) {
-                for (Image image : product.getImages()) {
-                    imageDTO = new ImageDTO(
+            List<ImageDTO> imageDTOList = product.getImages().stream()
+                    .map(image -> new ImageDTO(
                             image.getId(),
                             image.getName(),
                             image.getUrl()
-                    );
-                    imageDTOList.add(imageDTO);
-                }
-            }
+                    ))
+                    .collect(Collectors.toList());
+
             productDTO = new ProductDTO(
                     product.getId(),
                     product.getName(),
@@ -98,7 +94,8 @@ public class FavoriteServiceImpl implements FavoriteService {
                     product.getNewPrice(),
                     product.getColor(),
                     product.getRam(),
-                    product.getStorage()
+                    product.getStorage(),
+                    imageDTOList
             );
         }
 
