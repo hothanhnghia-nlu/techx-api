@@ -11,6 +11,12 @@ import java.util.List;
 @Data
 @Table(name = "orders")
 public class Order {
+
+    public static final int FAILPAYMENT = 1;
+    public static final int SUCCESS = 2;
+    public static final int CANCEL = 3;
+    public static final int CONFIRM = 4;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

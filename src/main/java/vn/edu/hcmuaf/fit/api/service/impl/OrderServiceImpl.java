@@ -3,7 +3,9 @@ package vn.edu.hcmuaf.fit.api.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.edu.hcmuaf.fit.api.dto.*;
+import vn.edu.hcmuaf.fit.api.dto.order.CreateOrderRequest;
 import vn.edu.hcmuaf.fit.api.exception.ResourceNotFoundException;
 import vn.edu.hcmuaf.fit.api.model.*;
 import vn.edu.hcmuaf.fit.api.repository.*;
@@ -22,6 +24,8 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
+    private OrderDetailRepository orderDetailRepository;
+    @Autowired
     private AuthenticationService authenticationService;
     @Autowired
     private UserRepository userRepository;
@@ -29,48 +33,71 @@ public class OrderServiceImpl implements OrderService {
     private AddressRepository addressRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private CartRepository cartRepository;
 
+    @Transactional
     @Override
-    public Order saveOrder(int addressId, OrderDTO orderDTO) {
+    public Order saveOrder(CreateOrderRequest createOrderRequest) {
+        System.out.println(createOrderRequest.toString());
         int userId = authenticationService.getCurrentUserId();
 
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new ResourceNotFoundException("User", "Id", userId));
 
-        Address address = addressRepository.findById(addressId).orElseThrow(() ->
-                new ResourceNotFoundException("Address", "Id", addressId));
+        Address address = addressRepository.findById(createOrderRequest.getIdAddress()).orElseThrow(() ->
+                new ResourceNotFoundException("Address", "Id", createOrderRequest.getIdAddress()));
 
+        List<Cart> carts = cartRepository.findByUserId(userId);
         Order order = new Order();
         order.setUser(user);
         order.setAddress(address);
-        order.setTotal(orderDTO.getTotal());
-        order.setPaymentMethod(orderDTO.getPaymentMethod());
-        order.setNote(orderDTO.getNote());
+        order.setTotal(createOrderRequest.getTotalAmount());
+        order.setPaymentMethod(createOrderRequest.getPaymentMethod());
+        order.setNote("");
         order.setOrderDate(LocalDateTime.now());
-        order.setStatus((byte) 1);
+        order.setStatus((byte) 4);
+        orderRepository.save(order);
+        if (createOrderRequest.getProductID() != 0) {
+            Product product = productRepository.findById(createOrderRequest.getProductID()).orElseThrow(() ->
+                    new ResourceNotFoundException("Product", "Id", createOrderRequest.getProductID()));
+            if (product.getQuantity() < 1) {
+                throw new IllegalArgumentException("Not enough stock for product ID: " + product.getId());
+            }
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setProduct(product);
+            orderDetail.setQuantity(1);
+            orderDetail.setPrice(product.getNewPrice());
+            orderDetail.setOrder(order);
+            orderDetailRepository.save(orderDetail);
 
-        order.setOrderDetails(new ArrayList<>());
+            // Minus quantity after checkout
+            product.setQuantity(product.getQuantity() - 1);
+            productRepository.save(product);
+            cartRepository.deleteAllByUserId(userId);
 
-        for (OrderDetailDTO orderDetailDTO : orderDTO.getOrderDetails()) {
-            Product product = productRepository.findById(orderDetailDTO.getProduct().getId()).orElseThrow(() ->
-                    new ResourceNotFoundException("Product", "Id", orderDetailDTO.getProduct().getId()));
+            return orderRepository.save(order);
+        }
+        for (Cart cart : carts) {
+            Product product = productRepository.findById(cart.getId()).orElseThrow(() ->
+                    new ResourceNotFoundException("Product", "Id", cart.getId()));
 
             // Check quantity in warehouse
-            if (product.getQuantity() < orderDetailDTO.getQuantity()) {
+            if (product.getQuantity() < cart.getQuantity()) {
                 throw new IllegalArgumentException("Not enough stock for product ID: " + product.getId());
             }
 
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setProduct(product);
-            orderDetail.setQuantity(orderDetailDTO.getQuantity());
-            orderDetail.setPrice(orderDetailDTO.getPrice());
+            orderDetail.setQuantity(cart.getQuantity());
+            orderDetail.setPrice(cart.getPrice());
             orderDetail.setOrder(order);
-
-            order.getOrderDetails().add(orderDetail);
+            orderDetailRepository.save(orderDetail);
 
             // Minus quantity after checkout
-            product.setQuantity(product.getQuantity() - orderDetailDTO.getQuantity());
+            product.setQuantity(product.getQuantity() - cart.getQuantity());
             productRepository.save(product);
+            cartRepository.deleteAllByUserId(userId);
         }
 
         return orderRepository.save(order);

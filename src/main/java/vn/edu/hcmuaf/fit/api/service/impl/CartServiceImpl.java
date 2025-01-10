@@ -34,13 +34,20 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart saveCart(int productId) {
+
+
         int userId = authenticationService.getCurrentUserId();
 
         User user = userRepository.findById(userId).orElseThrow(() ->
                 new ResourceNotFoundException("User", "Id", userId));
 
+        Cart existingCart = cartRepository.findByUserIdAndProductId(userId, productId).orElse(null);
         Product product = productRepository.findById(productId).orElseThrow(() ->
                 new ResourceNotFoundException("Product", "Id", productId));
+        if (existingCart != null) {
+            return updateCartByID(existingCart,product);
+        }
+
 
         Cart cart = new Cart();
         cart.setUser(user);
@@ -137,16 +144,25 @@ public class CartServiceImpl implements CartService {
     public Cart updateCartByID(Integer id, CartDTO cartDTO) {
         Cart existingCart = cartRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Cart", "Id", id));
+        existingCart.toString();
 
         Product product = productRepository.findById(cartDTO.getProduct().getId()).orElseThrow(() ->
                 new ResourceNotFoundException("Product", "Id", cartDTO.getProduct().getId()));
 
-        existingCart.setProduct(cartDTO.getProduct() != null ? product : existingCart.getProduct());
-        existingCart.setQuantity(cartDTO.getStatus() != 0 ? cartDTO.getQuantity() : existingCart.getQuantity());
-        existingCart.setPrice(cartDTO.getStatus() != 0 ? cartDTO.getPrice() : existingCart.getPrice());
-        existingCart.setStatus(cartDTO.getStatus() != 0 ? cartDTO.getStatus() : existingCart.getStatus());
+        double updatedPrice = product.getNewPrice() * cartDTO.getQuantity(); // Tăng số lượng
 
+        existingCart.setQuantity(cartDTO.getQuantity());
+        existingCart.setPrice(updatedPrice);
         return cartRepository.save(existingCart);
+    }
+
+    @Override
+    public Cart updateCartByID(Cart cart,Product product) {
+        int updatedQuantity = cart.getQuantity()+1;
+        double updatedPrice= product.getNewPrice()*updatedQuantity;
+        cart.setQuantity(updatedQuantity);
+        cart.setPrice(updatedPrice);
+        return cartRepository.save(cart);
     }
 
     @Override
