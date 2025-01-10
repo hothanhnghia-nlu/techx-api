@@ -36,7 +36,8 @@ public class PaymentServiceImpl implements PaymentService {
 
         // Tạo PaymentIntent
         PaymentIntentCreateParams intentParams = PaymentIntentCreateParams.builder()
-                .setAmount(amountInUsd) // Số tiền tính bằng đồng (VND)
+//                .setAmount(request.getAmount()) // Số tiền tính bằng đồng (VND)
+                .setAmount(amountInUsd)
                 .setCurrency("usd")
                 .setConfirmationMethod(PaymentIntentCreateParams.ConfirmationMethod.MANUAL)
                 .setCaptureMethod(PaymentIntentCreateParams.CaptureMethod.AUTOMATIC)

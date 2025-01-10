@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.api.dto.OrderDTO;
 import vn.edu.hcmuaf.fit.api.dto.OrderDTO;
 import vn.edu.hcmuaf.fit.api.dto.OrderDetailDTO;
+import vn.edu.hcmuaf.fit.api.dto.order.CreateOrderRequest;
 import vn.edu.hcmuaf.fit.api.model.Order;
 import vn.edu.hcmuaf.fit.api.service.OrderService;
 
@@ -26,9 +27,8 @@ public class OrderController {
 
     // Create a new Order
     @PostMapping()
-    public ResponseEntity<Order> createOrder(@RequestParam int addressId,
-                                             @ModelAttribute OrderDTO order) {
-        return new ResponseEntity<>(orderService.saveOrder(addressId, order), HttpStatus.CREATED);
+    public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest createOrderRequest) {
+        return new ResponseEntity<>(orderService.saveOrder(createOrderRequest), HttpStatus.CREATED);
     }
 
     // Get all Order
