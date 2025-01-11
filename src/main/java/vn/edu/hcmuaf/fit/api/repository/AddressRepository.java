@@ -6,8 +6,10 @@ import vn.edu.hcmuaf.fit.api.model.Address;
 import vn.edu.hcmuaf.fit.api.model.Cart;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Integer> {
     List<Address> findByUserId(int userId);
+    Optional<Address> findByIdAndUserId(int id, int userId);
 }

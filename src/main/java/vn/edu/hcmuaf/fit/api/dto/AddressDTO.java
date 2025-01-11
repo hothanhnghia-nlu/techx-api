@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 public class AddressDTO {
     private Integer id;
     private UserDTO user;
+    private String fullName;
+    private String phone;
     private String detail;
     private String ward;
     private String city;

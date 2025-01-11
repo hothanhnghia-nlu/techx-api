@@ -80,14 +80,14 @@ public class PaymentController {
             )
     })
     @PostMapping("/confirm")
-    public ResponseEntity<PaymentResponseDTO> confirmPayment(@RequestBody PaymentConfirmRequest request
+    public ResponseEntity confirmPayment(@RequestBody PaymentConfirmRequest request
     ) {
         try {
             PaymentResponseDTO response = paymentService.confirmPayment(request);
             return ResponseEntity.ok(response);
         } catch (StripeException e) {
             log.error("Error confirming payment: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 

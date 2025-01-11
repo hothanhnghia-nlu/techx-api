@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.edu.hcmuaf.fit.api.dto.AddressDTO;
+import vn.edu.hcmuaf.fit.api.exception.ApiRequestException;
 import vn.edu.hcmuaf.fit.api.model.Address;
 import vn.edu.hcmuaf.fit.api.service.AddressService;
 
@@ -42,20 +43,30 @@ public class AddressController {
 
     // Get Address by id
     @GetMapping("{id}")
-    public ResponseEntity<AddressDTO> getAddressById(@PathVariable ("id") int id) {
+    public ResponseEntity<AddressDTO> getAddressById(@PathVariable("id") int id) {
         return new ResponseEntity<>(addressService.getAddressByID(id), HttpStatus.OK);
     }
 
     // Update Address by id
     @PutMapping("{id}")
-    public ResponseEntity<Address> updateAddressById(@PathVariable ("id") int id,
-                                                       @ModelAttribute AddressDTO AddressDTO) {
+    public ResponseEntity<Address> updateAddressById(@PathVariable("id") int id,
+                                                     @ModelAttribute AddressDTO AddressDTO) {
         return new ResponseEntity<>(addressService.updateAddressByID(id, AddressDTO), HttpStatus.OK);
+    }
+
+    // Update Address by id
+    @PutMapping()
+    public ResponseEntity<Address> updateAddress(@RequestBody Address address) {
+        try {
+            return new ResponseEntity<>(addressService.updateAddress(address), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ApiRequestException(e.getMessage());
+        }
     }
 
     // Delete Address by id
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteAddressById(@PathVariable ("id") int id) {
+    public ResponseEntity<String> deleteAddressById(@PathVariable("id") int id) {
         addressService.deleteAddressByID(id);
         return new ResponseEntity<>("Address " + id + " is deleted successfully!", HttpStatus.OK);
     }
