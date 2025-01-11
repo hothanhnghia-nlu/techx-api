@@ -28,6 +28,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address saveAddress(AddressDTO addressDTO) {
+        System.out.println(addressDTO.toString());
         int userId = authenticationService.getCurrentUserId();
 
         User user = userRepository.findById(userId).orElseThrow(() ->
@@ -35,6 +36,8 @@ public class AddressServiceImpl implements AddressService {
 
         Address address = new Address();
         address.setUser(user);
+        address.setFullName(addressDTO.getFullName());
+        address.setPhoneNumber(addressDTO.getPhone());
         address.setProvince(addressDTO.getProvince());
         address.setCity(addressDTO.getCity());
         address.setWard(addressDTO.getWard());
@@ -76,6 +79,8 @@ public class AddressServiceImpl implements AddressService {
         AddressDTO addressDTO = new AddressDTO();
         addressDTO.setId(address.getId());
         addressDTO.setUser(userDTO);
+        addressDTO.setFullName(address.getFullName());
+        addressDTO.setPhone(address.getPhoneNumber());
         addressDTO.setProvince(address.getProvince());
         addressDTO.setCity(address.getCity());
         addressDTO.setWard(address.getWard());
@@ -123,5 +128,22 @@ public class AddressServiceImpl implements AddressService {
                 new ResourceNotFoundException("User", "Id", id));
 
         addressRepository.deleteById(id);
+    }
+
+    @Override
+    public Address updateAddress(Address address) {
+        System.out.println(address.toString());
+        int userId = authenticationService.getCurrentUserId();
+        Address existingAddress = addressRepository.findByIdAndUserId(address.getId(),userId).orElse(null);
+        existingAddress.setFullName(address.getFullName());
+        existingAddress.setPhoneNumber(address.getPhoneNumber());
+        existingAddress.setProvince(address.getProvince());
+        existingAddress.setCity(address.getCity());
+        existingAddress.setWard(address.getWard());
+        existingAddress.setDetail(address.getDetail());
+        existingAddress.setNote(address.getNote());
+        existingAddress.setStatus(address.getStatus());
+        existingAddress.setUpdatedAt(LocalDateTime.now());
+        return addressRepository.save(existingAddress);
     }
 }
