@@ -47,6 +47,16 @@ public class AddressController {
         return new ResponseEntity<>(addressService.getAddressByID(id), HttpStatus.OK);
     }
 
+    // Get Address by id
+    @GetMapping("/default")
+    public ResponseEntity<AddressDTO> getAddressDefault() {
+        try {
+            return new ResponseEntity<>(addressService.getAddressDefault(), HttpStatus.OK);
+        } catch (ApiRequestException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     // Update Address by id
     @PutMapping("{id}")
     public ResponseEntity<Address> updateAddressById(@PathVariable("id") int id,
