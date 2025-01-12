@@ -63,6 +63,16 @@ public class AddressServiceImpl implements AddressService {
         return addresses.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    @Override
+    public AddressDTO getAddressDefault() {
+        int userId = authenticationService.getCurrentUserId();
+        Address addresses = addressRepository.findByStatusAndUserId(0, userId).orElse(null);
+        if (addresses == null) {
+            addresses = addressRepository.findTopByUserIdOrderByCreatedAtDesc(userId).orElseThrow(() -> new ResourceNotFoundException("Address", "userID", userId));
+        }
+        return convertToDTO(addresses);
+    }
+
     private AddressDTO convertToDTO(Address address) {
         UserDTO userDTO = null;
         User user = address.getUser();
@@ -134,7 +144,7 @@ public class AddressServiceImpl implements AddressService {
     public Address updateAddress(Address address) {
         System.out.println(address.toString());
         int userId = authenticationService.getCurrentUserId();
-        Address existingAddress = addressRepository.findByIdAndUserId(address.getId(),userId).orElse(null);
+        Address existingAddress = addressRepository.findByIdAndUserId(address.getId(), userId).orElse(null);
         existingAddress.setFullName(address.getFullName());
         existingAddress.setPhoneNumber(address.getPhoneNumber());
         existingAddress.setProvince(address.getProvince());
