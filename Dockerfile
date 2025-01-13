@@ -1,12 +1,12 @@
 # Build stage
-FROM maven:3-eclipse-temurin-17 AS build
+FROM maven:3-openjdk-17 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
 # Run stage
-FROM eclipse-temurin:17-alpine
+FROM openjdk:17-jdk-slim
 WORKDIR /app
-COPY --from=build /app/target/*.jar techx-api.jar
+COPY --from=build /app/target/techx-api-0.0.1-SNAPSHOT.jar techx-api.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "techx-api.jar"]
+ENTRYPOINT ["java","-jar","techx-api.jar"]
