@@ -73,7 +73,7 @@ public class AppConfiguration {
                 .csrf().disable()
                 .cors().and()
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/products/**", "/api/v1/providers/**", "/api/v1/images/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider());
