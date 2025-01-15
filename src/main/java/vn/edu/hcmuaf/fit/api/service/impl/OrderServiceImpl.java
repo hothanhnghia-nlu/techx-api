@@ -56,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
         order.setPaymentMethod(createOrderRequest.getPaymentMethod());
         order.setNote("");
         order.setOrderDate(LocalDateTime.now());
-        order.setStatus((byte) 4);
+        order.setStatus((byte) 1);
         orderRepository.save(order);
         if (createOrderRequest.getProductID() != 0) {
             Product product = productRepository.findById(createOrderRequest.getProductID()).orElseThrow(() ->
@@ -96,6 +96,7 @@ public class OrderServiceImpl implements OrderService {
 
             // Minus quantity after checkout
             product.setQuantity(product.getQuantity() - cart.getQuantity());
+            product.setUpdatedAt(LocalDateTime.now());
             productRepository.save(product);
             cartRepository.deleteAllByUserId(userId);
         }
@@ -136,8 +137,8 @@ public class OrderServiceImpl implements OrderService {
             userDTO = new UserDTO(
                     user.getId(),
                     user.getFullName(),
-                    user.getEmail(),
-                    user.getPhoneNumber()
+                    user.getPhoneNumber(),
+                    user.getEmail()
             );
         }
 

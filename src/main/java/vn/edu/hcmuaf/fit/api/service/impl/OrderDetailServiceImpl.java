@@ -41,8 +41,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             userDTO = new UserDTO(
                     user.getId(),
                     user.getFullName(),
-                    user.getEmail(),
-                    user.getPhoneNumber()
+                    user.getPhoneNumber(),
+                    user.getEmail()
             );
         }
         if (address != null) {
