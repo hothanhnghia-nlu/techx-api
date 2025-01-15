@@ -168,7 +168,7 @@ public class UserServiceImpl implements UserService {
     public void sendOtpToEmail(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User không tồn tại"));
         //tao ma otp
-        String otp = String.valueOf(new Random().nextInt(999999));
+        String otp = String.format("%06d", new Random().nextInt(1000000));
         // luu otp vao redis voi thoi gian het han la 2 phut
         redisTemplate.opsForValue().set("OTP_" + email, otp, Duration.ofMinutes(OTP_EXPIRATION_MINUTES));
         log.info("OTP {} được lưu vào Redis với key {}", otp, "OTP_" + email);
