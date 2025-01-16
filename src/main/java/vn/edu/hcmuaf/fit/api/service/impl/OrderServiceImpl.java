@@ -48,6 +48,10 @@ public class OrderServiceImpl implements OrderService {
         Address address = addressRepository.findById(createOrderRequest.getIdAddress()).orElseThrow(() ->
                 new ResourceNotFoundException("Address", "Id", createOrderRequest.getIdAddress()));
 
+        LocalDateTime paymentDate = null;
+        if (createOrderRequest.getPaymentDate() != null) {
+            paymentDate = LocalDateTime.parse(createOrderRequest.getPaymentDate());
+        }
         List<Cart> carts = cartRepository.findByUserId(userId);
         Order order = new Order();
         order.setUser(user);
@@ -56,6 +60,7 @@ public class OrderServiceImpl implements OrderService {
         order.setPaymentMethod(createOrderRequest.getPaymentMethod());
         order.setNote("");
         order.setOrderDate(LocalDateTime.now());
+        order.setPaymentDate(paymentDate);
         order.setStatus((byte) 1);
         orderRepository.save(order);
         if (createOrderRequest.getProductID() != 0) {
