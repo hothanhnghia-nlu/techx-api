@@ -2,6 +2,8 @@ package vn.edu.hcmuaf.fit.api.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vn.edu.hcmuaf.fit.api.dto.*;
@@ -33,7 +35,7 @@ public class CartServiceImpl implements CartService {
     private AuthenticationService authenticationService;
 
     @Override
-    public Cart saveCart(int productId) {
+    public ResponseEntity<Cart> saveCart(int productId) {
 
 
         int userId = authenticationService.getCurrentUserId();
@@ -45,9 +47,9 @@ public class CartServiceImpl implements CartService {
         Product product = productRepository.findById(productId).orElseThrow(() ->
                 new ResourceNotFoundException("Product", "Id", productId));
         if (existingCart != null) {
-            return updateCartByID(existingCart,product);
+            Cart updatedCart = updateCartByID(existingCart, product);
+            return new ResponseEntity<>(updatedCart, HttpStatus.OK);
         }
-
 
         Cart cart = new Cart();
         cart.setUser(user);
@@ -57,7 +59,7 @@ public class CartServiceImpl implements CartService {
         cart.setStatus((byte) 1);
         cart.setOrderDate(LocalDateTime.now());
 
-        return cartRepository.save(cart);
+        return new ResponseEntity<>(cartRepository.save(cart), HttpStatus.CREATED);
     }
 
     @Override
