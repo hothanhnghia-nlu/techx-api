@@ -9,5 +9,6 @@ public class CreateOrderRequest {
     int idAddress;
     double totalAmount;
     String paymentMethod;
+    String paymentDate;
     int productID;
 }
