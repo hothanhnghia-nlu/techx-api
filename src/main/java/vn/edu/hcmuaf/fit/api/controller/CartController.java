@@ -25,7 +25,7 @@ public class CartController {
     // Create a new Cart
     @PostMapping()
     public ResponseEntity<Cart> createCart(@RequestParam int productId) {
-        return new ResponseEntity<>(cartService.saveCart(productId), HttpStatus.CREATED);
+        return cartService.saveCart(productId); // Trả về ResponseEntity từ saveCart
     }
 
     // Get all Cart
