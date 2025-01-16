@@ -127,4 +127,14 @@ public class FavoriteServiceImpl implements FavoriteService {
 
         favoriteRepository.deleteById(id);
     }
+
+    @Override
+    public void deleteFavoriteByProduct(int productId) {
+        int userId = authenticationService.getCurrentUserId();
+
+        Favorite favorite = favoriteRepository.findByUserIdAndProductId(userId, productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Favorite", "Product id", productId));
+
+        favoriteRepository.delete(favorite);
+    }
 }

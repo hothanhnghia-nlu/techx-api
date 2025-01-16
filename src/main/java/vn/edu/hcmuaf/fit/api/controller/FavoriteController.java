@@ -54,4 +54,12 @@ public class FavoriteController {
         return new ResponseEntity<>("Favorite " + id + " is deleted successfully!", HttpStatus.OK);
     }
 
+    // Delete Favorite by product id
+    @DeleteMapping("/product/{productId}")
+    public ResponseEntity<String> deleteFavoriteByProductId(@PathVariable ("productId") int productId) {
+        favoriteService.deleteFavoriteByProduct(productId);
+        return new ResponseEntity<>("Favorite by product id "
+                + productId + " is deleted successfully!", HttpStatus.OK);
+    }
+
 }
